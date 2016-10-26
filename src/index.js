@@ -1,3 +1,4 @@
+'use strict';
 const Aggregator = require('./fcts-ext-aggregator');
 const FusionCharts = require('../lib/fusioncharts');
 

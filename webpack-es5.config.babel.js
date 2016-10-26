@@ -1,6 +1,9 @@
+'use strict';
+import webpack from 'webpack';
+
 export default {
   output: {
-    filename: 'fcts-ext-dataaggregator-es5.js'
+    filename: 'fcts-ext-dataaggregator-es5.min.js'
   },
   module: {
     loaders: [
@@ -13,5 +16,9 @@ export default {
   },
   resolve: {
     extensions: ['', '.js']
-  }
+  },
+  devtool: 'inline-source-map',
+  plugins: [
+    new webpack.optimize.UglifyJsPlugin({ minimize: true })
+  ]
 };

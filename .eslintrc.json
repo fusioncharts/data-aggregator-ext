@@ -8,6 +8,9 @@
       "semi": [
         "error",
         "always"
+      ],
+      "one-var": [
+        "off"
       ]
     }
 }

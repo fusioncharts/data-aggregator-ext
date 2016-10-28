@@ -163,14 +163,14 @@ class Aggregator {
       timePeriodIndex = validTimePeriod.indexOf(obj.timePeriod);
       if (validTimePeriodMultiplier[timePeriodIndex].includes(obj.timePeriodMultiplier)) {
         this.aggregation = obj;
-        console.log(this.aggregation);
+        console.log(this.aggregation, true);
         return true;
       } else {
-        console.log(this.aggregation);
+        console.log(this.aggregation, false);
         return false;
       }
     } else {
-      console.log(this.aggregation);
+      console.log(this.aggregation, false);
       return false;
     }
   }
@@ -190,6 +190,7 @@ class Aggregator {
 
     this.getAvailablelAggreagation();
     this.getValidTimeMultiplier();
+    // this.getValidAggregation();
   }
 
   placeInCanvas () {

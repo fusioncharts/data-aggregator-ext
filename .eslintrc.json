@@ -12,5 +12,8 @@
       "one-var": [
         "off"
       ]
+    },
+    "globals": {
+      "FusionCharts": true
     }
 }

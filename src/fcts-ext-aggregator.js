@@ -36,21 +36,21 @@ class Aggregator {
     this.appliedAggregation.aggregationMethod = obj.aggregationMethod;
   }
 
-  getTimeMultiplier () {
-
-  }
-
+  /**
+   * Sets available aggregation options in configuration of extension
+   * @private
+   */
   getAvailablelAggreagation () {
     var config = this.config,
       avlAggMethods,
       avlTimePeriods,
       currentVisibleRange,
       currentTimeLength,
-      xAxis = global.x,
-      chart = global.chart;
+      xAxis = this.x,
+      chart = this.chart;
 
     avlAggMethods = chart.getAvailableAggregationMethod();
-    avlTimePeriods = avlTimePeriods = chart.getAvailableTimePeriod();
+    avlTimePeriods = chart.getAvailableTimePeriod();
 
     currentVisibleRange = xAxis.getCurrentVisibleRange();
     currentTimeLength = currentVisibleRange.endDate - currentVisibleRange.startDate;
@@ -60,9 +60,13 @@ class Aggregator {
     config.currentTimeLength = currentTimeLength;
   }
 
+  /**
+   * Calculates valid time multipliers of available time periods
+   * @private
+   */
   getValidTimeMultiplier () {
     var config = this.config,
-      xAxis = global.x,
+      xAxis = this.x,
       i,
       len,
       currTimePeriod,
@@ -90,8 +94,12 @@ class Aggregator {
     }
   }
 
+  /**
+   * Calculates valid aggregation time periods and corresponding multipliers
+   * @private
+   */
   getValidAggregation () {
-    var chartConfig = global.chart.config,
+    var chartConfig = this.chart.config,
       config = this.config,
       i,
       j,
@@ -140,11 +148,17 @@ class Aggregator {
         config.validTimePeriod.push(timePeriod);
       }
     }
-    console.log(config.validTimePeriod, config.validTimePeriodMultiplier, config.avlAggMethods);
+    console.log('Months: ', config.validTimePeriod);
+    console.log('Number Of Multipliers: ', config.validTimePeriodMultiplier);
+    console.log('Methods: ', config.avlAggMethods);
   }
 
   /**
    * Set Aggregation on time series
+   * @param  {object} obj
+   * @property {string} timePeriod - The time interval of aggregation.
+   * @property {number} timePeriodMultiplier - The multiplier of time interval.
+   * @property {string} aggregationMethod - The method applied to aggregate.
    */
   setAggregation (obj) {
     var avlAggMethods,
@@ -152,8 +166,6 @@ class Aggregator {
       timePeriodIndex,
       validTimePeriodMultiplier,
       config = this.config;
-
-    this.getValidAggregation();
 
     avlAggMethods = config.avlAggMethods;
     validTimePeriod = config.validTimePeriod;
@@ -163,14 +175,14 @@ class Aggregator {
       timePeriodIndex = validTimePeriod.indexOf(obj.timePeriod);
       if (validTimePeriodMultiplier[timePeriodIndex].includes(obj.timePeriodMultiplier)) {
         this.aggregation = obj;
-        console.log(this.aggregation, true);
+        console.log(this.aggregation);
         return true;
       } else {
-        console.log(this.aggregation, false);
+        console.log(this.aggregation);
         return false;
       }
     } else {
-      console.log(this.aggregation, false);
+      console.log(this.aggregation);
       return false;
     }
   }
@@ -183,14 +195,16 @@ class Aggregator {
   }
 
   init (require) {
+    var self = this;
+
     require('X-Axis', 'chart', function (x, chart) {
-      global.x = x;
-      global.chart = chart;
+      self.x = x;
+      self.chart = chart;
     });
 
     this.getAvailablelAggreagation();
     this.getValidTimeMultiplier();
-    // this.getValidAggregation();
+    this.getValidAggregation();
   }
 
   placeInCanvas () {

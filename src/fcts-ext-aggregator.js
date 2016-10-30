@@ -16,9 +16,10 @@ class Aggregator {
      */
     this.appliedAggregation = {
       timePeriod: null,
-      timePeriodMultiplier: 0,
+      timePeriodMultiplier: 1,
       aggregationMethod: null
     };
+    this.config = {};
   }
 
   /**
@@ -36,35 +37,178 @@ class Aggregator {
   }
 
   /**
+   * Sets available aggregation options in configuration of extension
+   * @private
+   */
+  getAvailablelAggreagation () {
+    var config = this.config,
+      avlAggMethods,
+      avlTimePeriods,
+      currentVisibleRange,
+      currentTimeLength,
+      xAxis = this.x,
+      chart = this.chart;
+
+    avlAggMethods = chart.getAvailableAggregationMethod();
+    avlTimePeriods = chart.getAvailableTimePeriod();
+
+    currentVisibleRange = xAxis.getCurrentVisibleRange();
+    currentTimeLength = currentVisibleRange.endDate - currentVisibleRange.startDate;
+
+    config.avlTimePeriods = avlTimePeriods;
+    config.avlAggMethods = avlAggMethods;
+    config.currentTimeLength = currentTimeLength;
+  }
+
+  /**
+   * Calculates valid time multipliers of available time periods
+   * @private
+   */
+  getValidTimeMultiplier () {
+    var config = this.config,
+      xAxis = this.x,
+      i,
+      len,
+      currTimePeriod,
+      nextTimePeriod,
+      numOfMultiplier,
+      currentTimeLength = xAxis.max - xAxis.min,
+      avlTimePeriods = config.avlTimePeriods,
+      getMultiplierArray = num => Array.from({length: num}, (v, k) => k + 1);
+
+    config.avlTimeMultiplier = [];
+    len = avlTimePeriods.length;
+
+    for (i = 0; i < len; i++) {
+      currTimePeriod = avlTimePeriods[i];
+      nextTimePeriod = avlTimePeriods[(i + 1)];
+
+      if (nextTimePeriod) {
+        numOfMultiplier =
+          nextTimePeriod[Object.keys(nextTimePeriod)[0]] / currTimePeriod[Object.keys(currTimePeriod)[0]];
+      } else {
+        numOfMultiplier =
+          currentTimeLength / currTimePeriod[Object.keys(currTimePeriod)[0]];
+      }
+      config.avlTimeMultiplier.push(getMultiplierArray(numOfMultiplier));
+    }
+  }
+
+  /**
+   * Calculates valid aggregation time periods and corresponding multipliers
+   * @private
+   */
+  getValidAggregation () {
+    var chartConfig = this.chart.config,
+      config = this.config,
+      i,
+      j,
+      len1,
+      len2,
+      avlTimePeriods,
+      avlTimeMultiplier,
+      minNumOfPlot = chartConfig.minNumOfPlot,
+      minPlotWidth = chartConfig.minPlotWidth,
+      canvasWidth = chartConfig.canvasWidth,
+      currentTimeLength,
+      timePeriod,
+      time,
+      expectedTime,
+      multiplier,
+      multiplierCounter,
+      getMultiplierArray = num => Array.from({length: num}, (v, k) => k + 1),
+      minTime,
+      maxTime;
+
+    avlTimePeriods = config.avlTimePeriods;
+    avlTimeMultiplier = config.avlTimeMultiplier;
+    currentTimeLength = config.currentTimeLength;
+
+    config.minTime = minTime = (currentTimeLength / canvasWidth) * minPlotWidth;
+    config.maxTime = maxTime = currentTimeLength / minNumOfPlot;
+
+    config.validTimePeriod = [];
+    config.validTimePeriodMultiplier = [];
+
+    for (i = 0, len1 = avlTimePeriods.length; i < len1; i++) {
+      timePeriod = Object.keys(avlTimePeriods[i])[0];
+      time = avlTimePeriods[i][Object.keys(avlTimePeriods[i])[0]];
+      multiplierCounter = 0;
+
+      for (j = 0, len2 = avlTimeMultiplier[i].length; j < len2; j++) {
+        multiplier = avlTimeMultiplier[i][j];
+        expectedTime = multiplier * time;
+
+        if ((expectedTime >= minTime) && (expectedTime <= maxTime)) {
+          multiplierCounter++;
+        }
+      }
+      if (multiplierCounter) {
+        config.validTimePeriodMultiplier.push(getMultiplierArray(multiplierCounter));
+        config.validTimePeriod.push(timePeriod);
+      }
+    }
+    console.log('Months: ', config.validTimePeriod);
+    console.log('Number Of Multipliers: ', config.validTimePeriodMultiplier);
+    console.log('Methods: ', config.avlAggMethods);
+  }
+
+  /**
    * Set Aggregation on time series
+   * @param  {object} obj
+   * @property {string} timePeriod - The time interval of aggregation.
+   * @property {number} timePeriodMultiplier - The multiplier of time interval.
+   * @property {string} aggregationMethod - The method applied to aggregate.
    */
   setAggregation (obj) {
-    this.aggregation = obj;
-    return true;
+    var avlAggMethods,
+      validTimePeriod,
+      timePeriodIndex,
+      validTimePeriodMultiplier,
+      config = this.config;
+
+    avlAggMethods = config.avlAggMethods;
+    validTimePeriod = config.validTimePeriod;
+    validTimePeriodMultiplier = config.validTimePeriodMultiplier;
+
+    if (avlAggMethods.includes(obj.aggregationMethod) && validTimePeriod.includes(obj.timePeriod)) {
+      timePeriodIndex = validTimePeriod.indexOf(obj.timePeriod);
+      if (validTimePeriodMultiplier[timePeriodIndex].includes(obj.timePeriodMultiplier)) {
+        this.aggregation = obj;
+        console.log(this.aggregation);
+        return true;
+      } else {
+        console.log(this.aggregation);
+        return false;
+      }
+    } else {
+      console.log(this.aggregation);
+      return false;
+    }
   }
 
   /**
    * Reset Applied Aggregation
    */
-  reset () {
+  resetAggregation () {
 
   }
 
   init (require) {
-    require('X-Axis', 'Y-Axis', function (x, y) {
-      global.x = x;
-      global.y = y;
+    var self = this;
+
+    require('X-Axis', 'chart', function (x, chart) {
+      self.x = x;
+      self.chart = chart;
     });
+
+    this.getAvailablelAggreagation();
+    this.getValidTimeMultiplier();
+    this.getValidAggregation();
   }
 
   placeInCanvas () {
     // space management
-    var isSet = this.setAggregation({
-      timePeriod: 'month',
-      timePeriodMultiplier: 3,
-      aggregationMethod: 'sum'
-    });
-    console.log(this.aggregation, isSet);
   }
 
   draw () {

@@ -8,6 +8,12 @@
       "semi": [
         "error",
         "always"
+      ],
+      "one-var": [
+        "off"
       ]
+    },
+    "globals": {
+      "FusionCharts": true
     }
 }

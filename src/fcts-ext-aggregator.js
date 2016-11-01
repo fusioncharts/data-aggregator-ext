@@ -42,22 +42,15 @@ class Aggregator {
    */
   getAvailablelAggreagation () {
     var config = this.config,
-      avlAggMethods,
-      avlTimePeriods,
       currentVisibleRange,
-      currentTimeLength,
       xAxis = this.x,
       chart = this.chart;
 
-    avlAggMethods = chart.getAvailableAggregationMethod();
-    avlTimePeriods = chart.getAvailableTimePeriod();
+    config.avlAggMethods = chart.getAvailableAggregationMethod();
+    config.avlTimePeriods = chart.getAvailableTimePeriod();
 
     currentVisibleRange = xAxis.getCurrentVisibleRange();
-    currentTimeLength = currentVisibleRange.endDate - currentVisibleRange.startDate;
-
-    config.avlTimePeriods = avlTimePeriods;
-    config.avlAggMethods = avlAggMethods;
-    config.currentTimeLength = currentTimeLength;
+    config.currentTimeLength = currentVisibleRange.endDate - currentVisibleRange.startDate;
   }
 
   /**

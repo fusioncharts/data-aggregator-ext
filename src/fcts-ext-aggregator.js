@@ -44,47 +44,23 @@ class Aggregator {
     var config = this.config,
       currentVisibleRange,
       xAxis = this.x,
-      chart = this.chart;
+      chart = this.chart,
+      avlTimePeriods,
+      i,
+      len;
 
     config.avlAggMethods = chart.getAvailableAggregationMethod();
-    config.avlTimePeriods = chart.getAvailableTimePeriod();
-
-    currentVisibleRange = xAxis.getCurrentVisibleRange();
-    config.currentTimeLength = currentVisibleRange.endDate - currentVisibleRange.startDate;
-  }
-
-  /**
-   * Calculates valid time multipliers of available time periods
-   * @private
-   */
-  getValidTimeMultiplier () {
-    var config = this.config,
-      xAxis = this.x,
-      i,
-      len,
-      currTimePeriod,
-      nextTimePeriod,
-      numOfMultiplier,
-      currentTimeLength = xAxis.max - xAxis.min,
-      avlTimePeriods = config.avlTimePeriods,
-      getMultiplierArray = num => Array.from({length: num}, (v, k) => k + 1);
+    avlTimePeriods = config.avlTimePeriods = chart.getAvailableTimePeriod();
 
     config.avlTimeMultiplier = [];
     len = avlTimePeriods.length;
 
     for (i = 0; i < len; i++) {
-      currTimePeriod = avlTimePeriods[i];
-      nextTimePeriod = avlTimePeriods[(i + 1)];
-
-      if (nextTimePeriod) {
-        numOfMultiplier =
-          nextTimePeriod[Object.keys(nextTimePeriod)[0]] / currTimePeriod[Object.keys(currTimePeriod)[0]];
-      } else {
-        numOfMultiplier =
-          currentTimeLength / currTimePeriod[Object.keys(currTimePeriod)[0]];
-      }
-      config.avlTimeMultiplier.push(getMultiplierArray(numOfMultiplier));
+      config.avlTimeMultiplier.push(avlTimePeriods[i].multipliers);
     }
+
+    currentVisibleRange = xAxis.getCurrentVisibleRange();
+    config.currentTimeLength = currentVisibleRange.endDate - currentVisibleRange.startDate;
   }
 
   /**
@@ -101,15 +77,13 @@ class Aggregator {
       avlTimePeriods,
       avlTimeMultiplier,
       minNumOfPlot = chartConfig.minNumOfPlot,
-      minPlotWidth = chartConfig.minPlotWidth,
-      canvasWidth = chartConfig.canvasWidth,
+      maxNumOfPlot = chartConfig.maxNumOfPlot,
+      multipliersArr,
       currentTimeLength,
       timePeriod,
       time,
       expectedTime,
       multiplier,
-      multiplierCounter,
-      getMultiplierArray = num => Array.from({length: num}, (v, k) => k + 1),
       minTime,
       maxTime;
 
@@ -117,7 +91,7 @@ class Aggregator {
     avlTimeMultiplier = config.avlTimeMultiplier;
     currentTimeLength = config.currentTimeLength;
 
-    config.minTime = minTime = (currentTimeLength / canvasWidth) * minPlotWidth;
+    config.minTime = minTime = currentTimeLength / maxNumOfPlot;
     config.maxTime = maxTime = currentTimeLength / minNumOfPlot;
 
     config.validTimePeriod = [];
@@ -126,22 +100,22 @@ class Aggregator {
     for (i = 0, len1 = avlTimePeriods.length; i < len1; i++) {
       timePeriod = Object.keys(avlTimePeriods[i])[0];
       time = avlTimePeriods[i][Object.keys(avlTimePeriods[i])[0]];
-      multiplierCounter = 0;
+      multipliersArr = [];
 
       for (j = 0, len2 = avlTimeMultiplier[i].length; j < len2; j++) {
         multiplier = avlTimeMultiplier[i][j];
         expectedTime = multiplier * time;
 
         if ((expectedTime >= minTime) && (expectedTime <= maxTime)) {
-          multiplierCounter++;
+          multipliersArr.push(avlTimeMultiplier[i][j]);
         }
       }
-      if (multiplierCounter) {
-        config.validTimePeriodMultiplier.push(getMultiplierArray(multiplierCounter));
+      if (multipliersArr.length > 0) {
+        config.validTimePeriodMultiplier.push(multipliersArr);
         config.validTimePeriod.push(timePeriod);
       }
     }
-    console.log('Months: ', config.validTimePeriod);
+    console.log('Time Period: ', config.validTimePeriod);
     console.log('Number Of Multipliers: ', config.validTimePeriodMultiplier);
     console.log('Methods: ', config.avlAggMethods);
   }
@@ -196,7 +170,6 @@ class Aggregator {
     });
 
     this.getAvailablelAggreagation();
-    this.getValidTimeMultiplier();
     this.getValidAggregation();
   }
 

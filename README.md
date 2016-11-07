@@ -10,4 +10,4 @@ Browser Inclusion
 Node Inclusion
 
 `var FusionCharts = require('fusioncharts');`
-`var DateRange = require('data-aggregator')(FusionCharts);`
+`var DataAggregator = require('data-aggregator')(FusionCharts);`

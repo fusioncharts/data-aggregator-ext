@@ -7,7 +7,73 @@
   <title>FCTS Data Aggregator Extension</title>
 </head>
 <body>
+  <script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
   <script src="lib/fusioncharts.js" charset="utf-8"></script>
-  <script src="dist/fcts-ext-dataaggregator-es5.min.js" charset="utf-8"></script>
+  <script src="dist/fcts-ext-dataaggregator-es6.min.js" charset="utf-8"></script>
+  <div id="mainCont" style="margin-top: 30px; margin-left: 36%; border: 3px solid black; width: 36%; padding: 12px;"></div>
+  <div style="margin-top: 60px; margin-left: 36%;">
+      <u><b><label>Current Visible Window:</label></b></u>
+      <div>
+          <b><label>Start Date:</label></b>
+          <label id="stdt1"></label>
+      </div>
+      <div>
+          <b><label>End Date:</label></b>
+          <label id="enddt1"></label>
+      </div>
+  </div>
+  <div style="margin-top: 30px; margin-left: 36%;">
+      <u><b><label>Total Range:</label></b></u>
+      <div>
+          <b><label>Start Date:</label></b>
+          <label id="stdt2"></label>
+      </div>
+      <div>
+          <b><label>End Date:</label></b>
+          <label id="enddt2"></label>
+      </div>
+  </div>
+  <div style="margin-top: 30px; margin-left: 36%;">
+      <div>
+          <b><label>Minimum Number Of Plots:</label></b>
+          <label id="min"></label>
+      </div>
+      <div>
+          <b><label>Maximum Number Of Plots:</label></b>
+          <label id="max"></label>
+      </div>
+  </div>
+  <div style="margin-top: 30px; margin-left: 36%;">
+    <u><b><label>Change Visible Range:</label></b></u>
+      <div>
+        <input type="text" id="inpStdt" placeholder="Enter Start Date here (YYYY-MM-DD)" style="width: 200px; height: 30px;">
+        <input type="text" id="inpEndDt" placeholder="Enter End Date here (YYYY-MM-DD)" style="width: 200px; height: 30px;">
+        <button type="button" id="submit" onclick="submit();" style="height: 30px;">Submit</button>
+      </div>
+  </div>
+
+  <script type="text/javascript">
+    var fc = new FusionCharts();
+
+    function UI () {
+        $('#stdt1').text(new Date(fc.xAxis.range.startDate));
+        $('#enddt1').text(new Date(fc.xAxis.range.endDate));
+
+        $('#stdt2').text(new Date(fc.xAxis.min));
+        $('#enddt2').text(new Date(fc.xAxis.max));
+
+        $('#min').text(fc.config.minNumOfPlot);
+        $('#max').text(fc.config.maxNumOfPlot);
+    }
+
+    function submit () {
+        fc.setCurrentVisibleRange($('#inpStdt').val(), $('#inpEndDt').val());
+        UI();
+    }
+    UI();
+  </script>
 </body>
 </html>

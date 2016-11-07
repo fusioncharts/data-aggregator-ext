@@ -1,9 +1,21 @@
 'use strict';
 const Aggregator = require('./fcts-ext-aggregator');
 
-;(function (factory) {
-  factory(FusionCharts);
-})(function (FC) {
+;(function (env, factory) {
+  if (typeof module === 'object' && module.exports) {
+    module.exports = env.document
+       ? factory(env) : function (win) {
+         if (!win.document) {
+           throw new Error('Window with document not present');
+         }
+         return factory(win, true);
+       };
+  } else {
+    env.Aggregator = factory(env, true);
+  }
+})(typeof window !== 'undefined' ? window : this, function (_window, windowExists) {
+  var FC = _window.FusionCharts;
+
   FC.register('extension', ['data-aggregator', function (id) {
     var global = this;
     var extAPI = global.extAPI;

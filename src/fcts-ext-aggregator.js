@@ -42,8 +42,6 @@ class Aggregator {
    */
   getAvailablelAggreagation () {
     var config = this.config,
-      currentVisibleRange,
-      xAxis = this.x,
       chart = this.chart,
       avlTimePeriods,
       i,
@@ -58,9 +56,6 @@ class Aggregator {
     for (i = 0; i < len; i++) {
       config.avlTimeMultiplier.push(avlTimePeriods[i].multipliers);
     }
-
-    currentVisibleRange = xAxis.getCurrentVisibleRange();
-    config.currentTimeLength = currentVisibleRange.endDate - currentVisibleRange.startDate;
   }
 
   /**
@@ -70,6 +65,7 @@ class Aggregator {
   getValidAggregation () {
     var chartConfig = this.chart.config,
       config = this.config,
+      xAxis = this.x,
       i,
       j,
       len1,
@@ -85,7 +81,11 @@ class Aggregator {
       expectedTime,
       multiplier,
       minTime,
-      maxTime;
+      maxTime,
+      currentVisibleRange;
+
+    config.currentVisibleRange = currentVisibleRange = xAxis.getCurrentVisibleRange();
+    config.currentTimeLength = currentVisibleRange.endDate - currentVisibleRange.startDate;
 
     avlTimePeriods = config.avlTimePeriods;
     avlTimeMultiplier = config.avlTimeMultiplier;
@@ -178,7 +178,88 @@ class Aggregator {
   }
 
   draw () {
-    // draw extension
+    var multiplierFld,
+      timePeriodFld,
+      AggMethodFld,
+      // chart = this.chart,
+      config = this.config,
+      // currentAggregation,
+      label,
+      mainCont = $('#mainCont'),
+      validTimePeriod = config.validTimePeriod,
+      validTimePeriodMultiplier = config.validTimePeriodMultiplier,
+      indexOfTimeUnit,
+      avlAggMethods = config.avlAggMethods,
+      timePeriodOnChange = function () {
+        var timePeriodVal = $('#time_period').val(),
+          timePeriodMultiplierVal = $('#mul').val(),
+          indexOfTimeUnit,
+          indexOfTimeMul;
+
+        indexOfTimeUnit = validTimePeriod.indexOf(timePeriodVal);
+        indexOfTimeMul = validTimePeriodMultiplier[indexOfTimeUnit].indexOf(Number(timePeriodMultiplierVal));
+
+        $('#mul').empty();
+        console.log(indexOfTimeUnit, indexOfTimeMul);
+
+        for (var mulVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
+          $('<option />', {text: mulVal}).appendTo(multiplierFld);
+        }
+
+        if (indexOfTimeMul < 0) {
+          $('#mul').val(validTimePeriodMultiplier[indexOfTimeUnit][0]);
+        } else {
+          $('#mul').val(timePeriodMultiplierVal);
+        }
+      };
+
+    // currentAggregation = chart.getAggregation();
+
+    if (mainCont.length === 0) {
+      return;
+    }
+
+    mainCont.empty();
+
+    label = $('<label>').text('Aggregate Data: ');
+    label.appendTo(mainCont);
+
+    multiplierFld = $('<select id="mul"/>');
+    timePeriodFld = $('<select id="time_period"/>');
+    AggMethodFld = $('<select id="agg_method"/>');
+
+    for (var unitVal of validTimePeriod) {
+      $('<option />', {text: unitVal}).appendTo(timePeriodFld);
+    }
+
+    indexOfTimeUnit = validTimePeriod.indexOf(validTimePeriod[0]);
+
+    if (indexOfTimeUnit >= 0) {
+      for (var mulVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
+        $('<option />', {text: mulVal}).appendTo(multiplierFld);
+      }
+    }
+
+    for (var aggVal of avlAggMethods) {
+      $('<option />', {text: aggVal}).appendTo(AggMethodFld);
+    }
+
+    multiplierFld.appendTo(mainCont);
+    // $('#mul').val(currentAggregation.timePeriodMultiplier);
+    timePeriodFld.appendTo(mainCont);
+    // $('#time_period').val(currentAggregation.timePeriod);
+    AggMethodFld.appendTo(mainCont);
+    // $('#agg_method').val(currentAggregation.aggregationMethod);
+
+    $('<button/>').text('Apply').appendTo(mainCont);
+    $('<button/>').text('Reset').appendTo(mainCont);
+
+    $('#time_period').change(timePeriodOnChange);
+  }
+
+  rangeChangeCallback () {
+    this.getValidAggregation();
+    this.draw();
   }
 
   dispose () {

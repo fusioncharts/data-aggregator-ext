@@ -140,7 +140,7 @@ class Aggregator {
 
     if (avlAggMethods.includes(obj.aggregationMethod) && validTimePeriod.includes(obj.timePeriod)) {
       timePeriodIndex = validTimePeriod.indexOf(obj.timePeriod);
-      if (validTimePeriodMultiplier[timePeriodIndex].includes(obj.timePeriodMultiplier)) {
+      if (validTimePeriodMultiplier[timePeriodIndex].includes(Number(obj.timePeriodMultiplier))) {
         this.aggregation = obj;
         console.log(this.aggregation);
         return true;
@@ -178,83 +178,83 @@ class Aggregator {
   }
 
   draw () {
-    var multiplierFld,
-      timePeriodFld,
-      AggMethodFld,
-      // chart = this.chart,
-      config = this.config,
-      // currentAggregation,
-      label,
-      mainCont = $('#mainCont'),
-      validTimePeriod = config.validTimePeriod,
-      validTimePeriodMultiplier = config.validTimePeriodMultiplier,
-      indexOfTimeUnit,
-      avlAggMethods = config.avlAggMethods,
-      timePeriodOnChange = function () {
-        var timePeriodVal = $('#time_period').val(),
-          timePeriodMultiplierVal = $('#mul').val(),
-          indexOfTimeUnit,
-          indexOfTimeMul;
+    // var multiplierFld,
+    //   timePeriodFld,
+    //   AggMethodFld,
+    //   // chart = this.chart,
+    //   config = this.config,
+    //   // currentAggregation,
+    //   label,
+    //   mainCont = $('#mainCont'),
+    //   validTimePeriod = config.validTimePeriod,
+    //   validTimePeriodMultiplier = config.validTimePeriodMultiplier,
+    //   indexOfTimeUnit,
+    //   avlAggMethods = config.avlAggMethods,
+    //   timePeriodOnChange = function () {
+    //     var timePeriodVal = $('#time_period').val(),
+    //       timePeriodMultiplierVal = $('#mul').val(),
+    //       indexOfTimeUnit,
+    //       indexOfTimeMul;
 
-        indexOfTimeUnit = validTimePeriod.indexOf(timePeriodVal);
-        indexOfTimeMul = validTimePeriodMultiplier[indexOfTimeUnit].indexOf(Number(timePeriodMultiplierVal));
+    //     indexOfTimeUnit = validTimePeriod.indexOf(timePeriodVal);
+    //     indexOfTimeMul = validTimePeriodMultiplier[indexOfTimeUnit].indexOf(Number(timePeriodMultiplierVal));
 
-        $('#mul').empty();
-        console.log(indexOfTimeUnit, indexOfTimeMul);
+    //     $('#mul').empty();
+    //     console.log(indexOfTimeUnit, indexOfTimeMul);
 
-        for (var mulVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
-          $('<option />', {text: mulVal}).appendTo(multiplierFld);
-        }
+    //     for (var mulVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
+    //       $('<option />', {text: mulVal}).appendTo(multiplierFld);
+    //     }
 
-        if (indexOfTimeMul < 0) {
-          $('#mul').val(validTimePeriodMultiplier[indexOfTimeUnit][0]);
-        } else {
-          $('#mul').val(timePeriodMultiplierVal);
-        }
-      };
+    //     if (indexOfTimeMul < 0) {
+    //       $('#mul').val(validTimePeriodMultiplier[indexOfTimeUnit][0]);
+    //     } else {
+    //       $('#mul').val(timePeriodMultiplierVal);
+    //     }
+    //   };
 
-    // currentAggregation = chart.getAggregation();
+    // // currentAggregation = chart.getAggregation();
 
-    if (mainCont.length === 0) {
-      return;
-    }
+    // if (mainCont.length === 0) {
+    //   return;
+    // }
 
-    mainCont.empty();
+    // mainCont.empty();
 
-    label = $('<label>').text('Aggregate Data: ');
-    label.appendTo(mainCont);
+    // label = $('<label>').text('Aggregate Data: ');
+    // label.appendTo(mainCont);
 
-    multiplierFld = $('<select id="mul"/>');
-    timePeriodFld = $('<select id="time_period"/>');
-    AggMethodFld = $('<select id="agg_method"/>');
+    // multiplierFld = $('<select id="mul"/>');
+    // timePeriodFld = $('<select id="time_period"/>');
+    // AggMethodFld = $('<select id="agg_method"/>');
 
-    for (var unitVal of validTimePeriod) {
-      $('<option />', {text: unitVal}).appendTo(timePeriodFld);
-    }
+    // for (var unitVal of validTimePeriod) {
+    //   $('<option />', {text: unitVal}).appendTo(timePeriodFld);
+    // }
 
-    indexOfTimeUnit = validTimePeriod.indexOf(validTimePeriod[0]);
+    // indexOfTimeUnit = validTimePeriod.indexOf(validTimePeriod[0]);
 
-    if (indexOfTimeUnit >= 0) {
-      for (var mulVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
-        $('<option />', {text: mulVal}).appendTo(multiplierFld);
-      }
-    }
+    // if (indexOfTimeUnit >= 0) {
+    //   for (var mulVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
+    //     $('<option />', {text: mulVal}).appendTo(multiplierFld);
+    //   }
+    // }
 
-    for (var aggVal of avlAggMethods) {
-      $('<option />', {text: aggVal}).appendTo(AggMethodFld);
-    }
+    // for (var aggVal of avlAggMethods) {
+    //   $('<option />', {text: aggVal}).appendTo(AggMethodFld);
+    // }
 
-    multiplierFld.appendTo(mainCont);
-    // $('#mul').val(currentAggregation.timePeriodMultiplier);
-    timePeriodFld.appendTo(mainCont);
-    // $('#time_period').val(currentAggregation.timePeriod);
-    AggMethodFld.appendTo(mainCont);
-    // $('#agg_method').val(currentAggregation.aggregationMethod);
+    // multiplierFld.appendTo(mainCont);
+    // // $('#mul').val(currentAggregation.timePeriodMultiplier);
+    // timePeriodFld.appendTo(mainCont);
+    // // $('#time_period').val(currentAggregation.timePeriod);
+    // AggMethodFld.appendTo(mainCont);
+    // // $('#agg_method').val(currentAggregation.aggregationMethod);
 
-    $('<button/>').text('Apply').appendTo(mainCont);
-    $('<button/>').text('Reset').appendTo(mainCont);
+    // $('<button/>').text('Apply').appendTo(mainCont);
+    // $('<button/>').text('Reset').appendTo(mainCont);
 
-    $('#time_period').change(timePeriodOnChange);
+    // $('#time_period').change(timePeriodOnChange);
   }
 
   rangeChangeCallback () {

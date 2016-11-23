@@ -9,7 +9,7 @@ import eslint from 'gulp-eslint';
 import { exec } from 'child_process';
 import istanbul from 'gulp-istanbul';
 import webpack from 'webpack-stream';
-import prettydiff from 'gulp-prettydiff';
+// import prettydiff from 'gulp-prettydiff';
 import sourcemaps from 'gulp-sourcemaps';
 import webpackEs5Config from './webpack-es5.config.babel.js';
 import webpackEs6Config from './webpack-es6.config.babel.js';
@@ -78,10 +78,10 @@ gulp.task('build', ['build-es5'], () =>
     cb();
   }))
   .pipe(sourcemaps.write())
-  .pipe(prettydiff({
-    'lang': 'javascript',
-    'mode': 'minify'
-  }))
+  // .pipe(prettydiff({
+  //   'lang': 'javascript',
+  //   'mode': 'minify'
+  // }))
   .pipe(gulp.dest('dist'))
 );
 

@@ -1,270 +1,668 @@
 'use strict';
-/**
- * Class representing the Data Aggregator.
- */
-class Aggregator {
+
+module.exports = function (dep) {
   /**
-   * Create a Aggregator.
-   * @typedef {object} Aggregator.aggregation
-   * @property {string} timePeriod - The time interval of aggregation.
-   * @property {number} timePeriodMultiplier - The multiplier of time interval.
-   * @property {string} aggregationMethod - The method applied to aggregate.
+   * Class representing the Data Aggregator.
    */
-  constructor () {
+  class Aggregator {
     /**
+     * Create a Aggregator.
+     * @typedef {object} Aggregator.aggregation
+     * @property {string} timePeriod - The time interval of aggregation.
+     * @property {number} timePeriodMultiplier - The multiplier of time interval.
+     * @property {string} aggregationMethod - The method applied to aggregate.
+     */
+    constructor () {
+      /**
+       * @private
+       */
+      this.appliedAggregation = {
+        timePeriod: null,
+        timePeriodMultiplier: null,
+        aggregationMethod: null
+      };
+      this.config = {};
+    }
+
+    /**
+     * An object representing the timePeriod, timePeriodMultiplier, aggregationMethod.
+     * @type {Aggregator.aggregation}
+     */
+    get aggregation () {
+      return this.appliedAggregation;
+    }
+
+    set aggregation (obj) {
+      this.appliedAggregation.timePeriod = obj.timePeriod;
+      this.appliedAggregation.timePeriodMultiplier = obj.timePeriodMultiplier;
+      this.appliedAggregation.aggregationMethod = obj.aggregationMethod;
+    }
+
+    /**
+     * Sets available aggregation options in configuration of extension
      * @private
      */
-    this.appliedAggregation = {
-      timePeriod: null,
-      timePeriodMultiplier: 1,
-      aggregationMethod: null
-    };
-    this.config = {};
-  }
+    getAvailablelAggreagation () {
+      var config = this.config,
+        dataAgg = config.dataAgg,
+        avlTimePeriods = config.avlTimePeriods = dataAgg.getAggregationTimeRules(),
+        i,
+        len;
 
-  /**
-   * An object representing the timePeriod, timePeriodMultiplier, aggregationMethod.
-   * @type {Aggregator.aggregation}
-   */
-  get aggregation () {
-    return this.appliedAggregation;
-  }
+      config.avlAggMethods = dataAgg.getAllAggregationMethod();
 
-  set aggregation (obj) {
-    this.appliedAggregation.timePeriod = obj.timePeriod;
-    this.appliedAggregation.timePeriodMultiplier = obj.timePeriodMultiplier;
-    this.appliedAggregation.aggregationMethod = obj.aggregationMethod;
-  }
+      config.avlTimeMultiplier = [];
+      len = avlTimePeriods.length;
 
-  /**
-   * Sets available aggregation options in configuration of extension
-   * @private
-   */
-  getAvailablelAggreagation () {
-    var config = this.config,
-      chart = this.chart,
-      avlTimePeriods,
-      i,
-      len;
-
-    config.avlAggMethods = chart.getAvailableAggregationMethod();
-    avlTimePeriods = config.avlTimePeriods = chart.getAvailableTimePeriod();
-
-    config.avlTimeMultiplier = [];
-    len = avlTimePeriods.length;
-
-    for (i = 0; i < len; i++) {
-      config.avlTimeMultiplier.push(avlTimePeriods[i].multipliers);
+      for (i = 0; i < len; i++) {
+        config.avlTimeMultiplier.push(avlTimePeriods[i].possibleFactors);
+      }
     }
-  }
 
-  /**
-   * Calculates valid aggregation time periods and corresponding multipliers
-   * @private
-   */
-  getValidAggregation () {
-    var chartConfig = this.chart.config,
-      config = this.config,
-      xAxis = this.x,
-      i,
-      j,
-      len1,
-      len2,
-      avlTimePeriods,
-      avlTimeMultiplier,
-      minNumOfPlot = chartConfig.minNumOfPlot,
-      maxNumOfPlot = chartConfig.maxNumOfPlot,
-      multipliersArr,
-      currentTimeLength,
-      timePeriod,
-      time,
-      expectedTime,
-      multiplier,
-      minTime,
-      maxTime,
-      currentVisibleRange;
+    /**
+     * Calculates valid aggregation time periods and corresponding multipliers
+     * @private
+     */
+    getValidAggregation () {
+      var self = this,
+        config = self.config,
+        tsObject = self.tsObject,
+        i,
+        j,
+        len1,
+        len2,
+        avlTimePeriods,
+        avlTimeMultiplier,
+        // minNumOfPlot = 5,
+        maxNumOfPlot = config.composition.reactiveModel.model['max-plot-point'],
+        multipliersArr,
+        currentTimeLength,
+        timePeriod,
+        time,
+        expectedTime,
+        multiplier,
+        minBinSize;
+        // maxBinSize;
 
-    config.currentVisibleRange = currentVisibleRange = xAxis.getCurrentVisibleRange();
-    config.currentTimeLength = currentVisibleRange.endDate - currentVisibleRange.startDate;
+      config.currentTimeLength = tsObject.globalReactiveModel.model['x-axis-visible-range-end'] -
+        tsObject.globalReactiveModel.model['x-axis-visible-range-start'];
 
-    avlTimePeriods = config.avlTimePeriods;
-    avlTimeMultiplier = config.avlTimeMultiplier;
-    currentTimeLength = config.currentTimeLength;
+      avlTimePeriods = config.avlTimePeriods;
+      avlTimeMultiplier = config.avlTimeMultiplier;
+      currentTimeLength = config.currentTimeLength;
 
-    config.minTime = minTime = currentTimeLength / maxNumOfPlot;
-    config.maxTime = maxTime = currentTimeLength / minNumOfPlot;
+      config.minBinSize = minBinSize = currentTimeLength / maxNumOfPlot;
+      // config.maxBinSize = maxBinSize = currentTimeLength / minNumOfPlot;
 
-    config.validTimePeriod = [];
-    config.validTimePeriodMultiplier = [];
+      config.validTimePeriod = [];
+      config.validTimePeriodMultiplier = [];
 
-    for (i = 0, len1 = avlTimePeriods.length; i < len1; i++) {
-      timePeriod = Object.keys(avlTimePeriods[i])[0];
-      time = avlTimePeriods[i][Object.keys(avlTimePeriods[i])[0]];
-      multipliersArr = [];
+      for (i = 0, len1 = avlTimePeriods.length; i < len1; i++) {
+        timePeriod = avlTimePeriods[i].name;
+        time = avlTimePeriods[i].interval;
+        multipliersArr = [];
 
-      for (j = 0, len2 = avlTimeMultiplier[i].length; j < len2; j++) {
-        multiplier = avlTimeMultiplier[i][j];
-        expectedTime = multiplier * time;
+        for (j = 0, len2 = avlTimeMultiplier[i].length; j < len2; j++) {
+          multiplier = avlTimeMultiplier[i][j];
+          expectedTime = multiplier * time;
 
-        if ((expectedTime >= minTime) && (expectedTime <= maxTime)) {
-          multipliersArr.push(avlTimeMultiplier[i][j]);
+          // if ((expectedTime >= minBinSize) && (expectedTime <= maxBinSize)) {
+          if ((expectedTime >= minBinSize)) {
+            multipliersArr.push(avlTimeMultiplier[i][j]);
+          }
+        }
+        if (multipliersArr.length > 0) {
+          config.validTimePeriodMultiplier.push(multipliersArr);
+          config.validTimePeriod.push(timePeriod);
         }
       }
-      if (multipliersArr.length > 0) {
-        config.validTimePeriodMultiplier.push(multipliersArr);
-        config.validTimePeriod.push(timePeriod);
-      }
+      // console.log('Time Period: ', config.validTimePeriod);
+      // console.log('Number Of Multipliers: ', config.validTimePeriodMultiplier);
+      // console.log('Methods: ', config.avlAggMethods);
     }
-    console.log('Time Period: ', config.validTimePeriod);
-    console.log('Number Of Multipliers: ', config.validTimePeriodMultiplier);
-    console.log('Methods: ', config.avlAggMethods);
-  }
 
-  /**
-   * Set Aggregation on time series
-   * @param  {object} obj
-   * @property {string} timePeriod - The time interval of aggregation.
-   * @property {number} timePeriodMultiplier - The multiplier of time interval.
-   * @property {string} aggregationMethod - The method applied to aggregate.
-   */
-  setAggregation (obj) {
-    var avlAggMethods,
-      validTimePeriod,
-      timePeriodIndex,
-      validTimePeriodMultiplier,
-      config = this.config;
+    getCurrentAggreation () {
+      var self = this,
+        config = self.config,
+        dataAgg = config.dataAgg,
+        composition = config.composition,
+        model = composition.reactiveModel,
+        currentAggBin,
+        currentAggMethod,
+        suitableInterval,
+        binSize;
 
-    avlAggMethods = config.avlAggMethods;
-    validTimePeriod = config.validTimePeriod;
-    validTimePeriodMultiplier = config.validTimePeriodMultiplier;
+      binSize = model.prop('bin-size') - 1;
 
-    if (avlAggMethods.includes(obj.aggregationMethod) && validTimePeriod.includes(obj.timePeriod)) {
-      timePeriodIndex = validTimePeriod.indexOf(obj.timePeriod);
-      if (validTimePeriodMultiplier[timePeriodIndex].includes(Number(obj.timePeriodMultiplier))) {
-        this.aggregation = obj;
-        console.log(this.aggregation);
-        return true;
+      if (isFinite(binSize)) {
+        suitableInterval = dataAgg.timeRules.getSuitableInterval(binSize);
+        currentAggMethod = model.prop('aggregation-fn');
       } else {
-        console.log(this.aggregation);
-        return false;
+        suitableInterval = composition.xAxis.getScaleObj().getIntervalObj().getConfig('intervals').minor.timeUnit;
+        config.validTimePeriod.push(suitableInterval.name);
+        config.validTimePeriodMultiplier.push([suitableInterval.step]);
+        currentAggMethod = config.avlAggMethods['invalid'] = {
+          formalName: 'Invalid',
+          nickName: 'Invalid'
+        };
       }
-    } else {
-      console.log(this.aggregation);
-      return false;
+
+      return {
+        timePeriod: suitableInterval.name,
+        timePeriodMultiplier: suitableInterval.step,
+        aggregationMethod: {
+          value: currentAggMethod.nickName,
+          text: currentAggMethod.formalName
+        }
+      };
+    }
+
+    /**
+     * Set Aggregation on time series
+     * @param  {object} obj
+     * @property {string} timePeriod - The time interval of aggregation.
+     * @property {number} timePeriodMultiplier - The multiplier of time interval.
+     * @property {string} aggregationMethod - The method applied to aggregate.
+     */
+    setAggregation (obj) {
+      var avlAggMethods,
+        validTimePeriod,
+        timePeriodIndex,
+        validTimePeriodMultiplier,
+        config = this.config;
+
+      avlAggMethods = config.avlAggMethods;
+      validTimePeriod = config.validTimePeriod;
+      validTimePeriodMultiplier = config.validTimePeriodMultiplier;
+
+      // if (avlAggMethods.includes(obj.aggregationMethod) && validTimePeriod.includes(obj.timePeriod)) {
+      //   timePeriodIndex = validTimePeriod.indexOf(obj.timePeriod);
+      //   if (validTimePeriodMultiplier[timePeriodIndex].includes(Number(obj.timePeriodMultiplier))) {
+      //     this.aggregation = obj;
+      //     console.log(this.aggregation);
+      //     return true;
+      //   } else {
+      //     console.log(this.aggregation);
+      //     return false;
+      //   }
+      // } else {
+      //   console.log(this.aggregation);
+      //   return false;
+      // }
+    }
+
+    /**
+     * Reset Applied Aggregation
+     */
+    resetAggregation () {
+
+    }
+
+    init (require) {
+      var self = this,
+        config = self.config,
+        toolboxComponent = config.toolboxComponent = {},
+        api,
+        store,
+        composition,
+        saveTo = 'tsObject',
+        requiredParams = [
+          'graphics',
+          'globalReactiveModel',
+          'chart',
+          'spaceManagerInstance',
+          'chartInstance',
+          'smartLabel',
+          function acquire () {
+            let i = 0,
+              ii = requiredParams.length - 1,
+              param = '';
+            self[saveTo] = self[saveTo] || {};
+            self.requiredParams = {};
+            for (i = 0; i < ii; ++i) {
+              param = requiredParams[i];
+              self[saveTo][param] = arguments[i];
+            }
+            // onInit(self[saveTo]);
+          }
+        ];
+      require(requiredParams);
+
+      api = self.tsObject.chartInstance.apiInstance;
+      store = api.getComponentStore();
+      config.composition = composition = store.getCanvasByIndex(0).composition;
+      config.dataAgg = composition.impl.getDataAggregator();
+
+      toolboxComponent.toolbox = dep.FC.getComponent('api', 'toolbox');
+      toolboxComponent.config = {};
+
+      self.toolbars = [];
+
+      self.measurement = {};
+
+      self.toolbars.push(self.createToolbar());
+
+      window.Aggregator = self;
+      return self;
+    }
+
+    createToolbar () {
+      var self = this,
+        group,
+        toolbar,
+        timeMulSelectMenu,
+        timePeriodSelectMenu,
+        aggMethodSelectMenu,
+        resetButton,
+        applyButton,
+        config = self.config,
+        tsObject = self.tsObject,
+        label,
+
+        toolboxComponent = config.toolboxComponent,
+        toolbox = toolboxComponent.toolbox,
+        toolboxCompConfig = toolboxComponent.config,
+        HorizontalToolbar = toolbox.HorizontalToolbar,
+        ComponentGroup = toolbox.ComponentGroup,
+        SymbolStore = toolbox.SymbolStore,
+
+        graphics = tsObject.graphics,
+        paper = graphics.paper,
+        container = graphics.container,
+        chart = tsObject.chart,
+        smartLabel = tsObject.smartLabel,
+
+        multiplierVal,
+        timeMulSelectMenuOpt = '',
+
+        dependencies = {
+          paper: paper,
+          chart: chart,
+          smartLabel: smartLabel,
+          chartContainer: container
+        },
+        apply = function () {
+          var model = config.composition.reactiveModel,
+            timePeriodVal = timePeriodSelectMenu.value(),
+            timePeriodMultiplierVal = timeMulSelectMenu.value(),
+            aggMethodSelectMenuVal = aggMethodSelectMenu.value(),
+            keys,
+            timeInterval;
+
+          for (keys of config.avlTimePeriods) {
+            if (keys.name === timePeriodVal) {
+              timeInterval = keys.interval;
+              break;
+            }
+          }
+
+          model
+            .lock()
+            .prop('bin-size-ext', (timeInterval * Number(timePeriodMultiplierVal)))
+            .prop('aggregation-fn-ext', config.avlAggMethods[aggMethodSelectMenuVal])
+            .unlock();
+
+          // applyButton.updateVisual('disable');
+          // applyButton.updateVisual('enable');
+        },
+
+        timePeriodOnChange = function () {
+          var timePeriodVal = timePeriodSelectMenu.value(),
+            timePeriodMultiplierVal = timeMulSelectMenu.value(),
+            prevTimePeroidMulVal = timePeriodMultiplierVal,
+            validTimePeriod = config.validTimePeriod,
+            validTimePeriodMultiplier = config.validTimePeriodMultiplier,
+            indexOfTimeUnit,
+            indexOfTimeMul;
+
+          indexOfTimeUnit = validTimePeriod.indexOf(timePeriodVal);
+          indexOfTimeMul = validTimePeriodMultiplier[indexOfTimeUnit].indexOf(Number(timePeriodMultiplierVal));
+
+          // console.log(indexOfTimeUnit, indexOfTimeMul);
+          timeMulSelectMenuOpt = '';
+          for (multiplierVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
+            timeMulSelectMenuOpt += '<option value="' + multiplierVal + '">' + multiplierVal + '</option>';
+          }
+
+          timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
+
+          if (indexOfTimeMul < 0) {
+            timeMulSelectMenu.value(validTimePeriodMultiplier[indexOfTimeUnit][0].toString());
+          } else {
+            timeMulSelectMenu.value(prevTimePeroidMulVal);
+          }
+        };
+
+      group = new ComponentGroup(dependencies);
+      toolbar = new HorizontalToolbar(dependencies);
+
+      group.setConfig({
+        fill: '#fff',
+        borderThickness: 0
+      });
+
+      toolbar.setConfig({
+        fill: '#fff',
+        borderThickness: 0
+      });
+
+      label = new toolbox.Label('Aggregate Data:', dependencies, {
+        text: {
+          style: {
+            'font-size': '14',
+            'fill': '#696969'
+          }
+        }
+      });
+
+      toolboxCompConfig.timePeriodSelectMenu = timePeriodSelectMenu = new toolbox.SelectSymbol({
+        width: 80,
+        height: 20
+      }, dependencies, {
+        innerHTML: '<option value="time">Time Period</option>'
+      }, {
+        strokeWidth: 1,
+        stroke: 'rgba(102,102,102,0.5)',
+        symbolStrokeWidth: 0,
+        btnTextStyle: {
+          fontSize: 11
+        },
+        hoverFill: '#1e1f1f'
+      });
+
+      toolboxCompConfig.timeMulSelectMenu = timeMulSelectMenu = new toolbox.SelectSymbol({
+        width: 50,
+        height: 20
+      }, dependencies, {
+        innerHTML: '<option value="number">Multiplier</option>'
+      }, {
+        strokeWidth: 1,
+        stroke: 'rgba(102,102,102,0.5)',
+        symbolStrokeWidth: 0,
+        btnTextStyle: {
+          fontSize: 11
+        },
+        hoverFill: '#1e1f1f'
+      });
+
+      toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({
+        width: 80,
+        height: 20
+      }, dependencies, {
+        innerHTML: '<option value="Formula">Method</option>'
+      }, {
+        strokeWidth: 1,
+        stroke: 'rgba(102,102,102,0.5)',
+        symbolStrokeWidth: 0,
+        btnTextStyle: {
+          fontSize: 11
+        },
+        hoverFill: '#1e1f1f'
+      });
+
+      toolboxCompConfig.applyButton = applyButton = new toolbox.Symbol('APPLY', true, dependencies, {
+        fill: '#555',
+        labelFill: '#fff',
+        hoverFill: '#555',
+        width: 30,
+        height: 20,
+        btnTextStyle: {
+          fontSize: 11
+        }
+      }).attachEventHandlers({
+        click: function () {
+          apply();
+        }
+      });
+      toolboxCompConfig.resetButton = resetButton = new toolbox.Symbol('RESET', true, dependencies, {
+        fill: '#898b8b',
+        labelFill: '#fff',
+        hoverFill: '#898b8b',
+        width: 30,
+        height: 20,
+        btnTextStyle: {
+          fontSize: 11
+        }
+      }).attachEventHandlers({
+        'click': function () {
+          console.log(this);
+        }
+      });
+
+      group.addSymbol(label);
+      group.addSymbol(timeMulSelectMenu);
+      group.addSymbol(timePeriodSelectMenu);
+      group.addSymbol(aggMethodSelectMenu);
+      group.addSymbol(applyButton);
+
+      group.addSymbol(resetButton);
+
+      SymbolStore.register('textBoxIcon', function (x, y, rad, w, h, padX, padY) {
+        var x1 = x - w / 2 + padX / 2,
+          x2 = x + w / 2 - padX / 2,
+          y1 = y - h / 2 + padY / 2,
+          y2 = y + h / 2 - padY / 2;
+
+        return ['M', x1, y1, 'L', x2, y1, 'L', x2, y2, 'L', x1, y2, 'Z'];
+      });
+
+      timeMulSelectMenu.attachEventHandlers({
+        click: {
+          fn: timeMulSelectMenu.edit
+        },
+        textOnBlur: function () {
+          timeMulSelectMenu.blur();
+        }
+      });
+      timePeriodSelectMenu.attachEventHandlers({
+        click: {
+          fn: timePeriodSelectMenu.edit
+        },
+        textOnBlur: function () {
+          timePeriodSelectMenu.blur();
+        },
+        textOnChange: function () {
+          timePeriodSelectMenu.blur();
+          timePeriodOnChange();
+        }
+      });
+      aggMethodSelectMenu.attachEventHandlers({
+        click: {
+          fn: aggMethodSelectMenu.edit
+        },
+        textOnBlur: function () {
+          aggMethodSelectMenu.blur();
+        }
+      });
+
+      toolbar.addComponent(group);
+
+      return toolbar;
+    }
+
+    getLogicalSpace (availableWidth, availableHeight) {
+      var logicalSpace,
+        width = 0,
+        height = 0,
+        i,
+        ln;
+
+      for (i = 0, ln = this.toolbars.length; i < ln; i++) {
+        logicalSpace = this.toolbars[i].getLogicalSpace();
+        width = Math.max(logicalSpace.width, width);
+        height += logicalSpace.height;
+        this.toolbars[i].width = logicalSpace.width;
+        this.toolbars[i].height = logicalSpace.height;
+      }
+      height += this.padding;
+      return {
+        width: width > availableWidth ? 0 : width,
+        height: height > availableHeight ? 0 : height
+      };
+    }
+
+    placeInCanvas (containerInstance) {
+      var self = this,
+        tsObject = self.tsObject;
+
+      self.padding = 5;
+      tsObject.spaceManagerInstance.add([{
+        name: function () {
+          return 'DataAggregator';
+        },
+        ref: function (obj) {
+          return obj['0'];
+        },
+        self: function () {
+          return self;
+        },
+        priority: function () {
+          return 2;
+        },
+        layout: function (obj) {
+          return obj.inline;
+        },
+        orientation: [{
+          type: function (obj) {
+            return obj.horizontal;
+          },
+          position: [{
+            type: function (obj) {
+              return obj.top;
+            },
+            alignment: [{
+              type: function (obj) {
+                return obj.left;
+              },
+              dimensions: [function () {
+                var parent = this.getParentComponentGroup();
+                return self.getLogicalSpace(parent.getWidth(), parent.getHeight());
+              }]
+            }]
+          }]
+        }]
+      }]);
+    }
+
+    setDrawingConfiguration (x, y, width, height, group) {
+      var mes = this.measurement;
+      mes.x = x;
+      mes.y = y;
+      mes.width = width;
+      mes.height = height;
+
+      this.parentGroup = group;
+
+      return this;
+    }
+
+    draw (x, y, width, height, group) {
+      var self = this,
+        config = self.config,
+        toolboxCompConfig = config.toolboxComponent.config,
+        timePeriodSelectMenu = toolboxCompConfig.timePeriodSelectMenu,
+        timeMulSelectMenu = toolboxCompConfig.timeMulSelectMenu,
+        aggMethodSelectMenu = toolboxCompConfig.aggMethodSelectMenu,
+        currentAggregationObj,
+        measurement = self.measurement,
+        toolbars = self.toolbars,
+        ln,
+        i,
+        toolbar,
+        model = config.composition.reactiveModel,
+
+        timePeriodVal,
+        timePeriodSelectMenuOpt,
+        validTimePeriod,
+        indexOfTimeUnit,
+
+        multiplierVal,
+        timeMulSelectMenuOpt,
+        validTimePeriodMultiplier,
+
+        aggVal,
+        aggMethodSelectMenuOpt,
+        avlAggMethods,
+        onChange = function () {
+          self.getValidAggregation();
+          currentAggregationObj = self.getCurrentAggreation();
+
+          timePeriodSelectMenuOpt = '';
+          timeMulSelectMenuOpt = '';
+          aggMethodSelectMenuOpt = '';
+
+          validTimePeriod = config.validTimePeriod;
+          validTimePeriodMultiplier = config.validTimePeriodMultiplier;
+          avlAggMethods = config.avlAggMethods;
+
+          for (timePeriodVal of validTimePeriod) {
+            timePeriodSelectMenuOpt += '<option value="' + timePeriodVal + '">' + timePeriodVal + '</option>';
+          }
+
+          timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
+          timePeriodSelectMenu.value(currentAggregationObj.timePeriod);
+
+          indexOfTimeUnit = validTimePeriod.indexOf(currentAggregationObj.timePeriod);
+
+          if (indexOfTimeUnit >= 0) {
+            for (multiplierVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
+              timeMulSelectMenuOpt += '<option value="' + multiplierVal + '">' + multiplierVal + '</option>';
+            }
+          }
+
+          timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
+          timeMulSelectMenu.value(currentAggregationObj.timePeriodMultiplier.toString());
+
+          for (aggVal in avlAggMethods) {
+            if (avlAggMethods[aggVal].nickName === 'Invalid') {
+              aggMethodSelectMenuOpt += '<option disabled hidden value="' + avlAggMethods[aggVal].nickName + '">' +
+               avlAggMethods[aggVal].formalName + '</option>';
+            } else {
+              aggMethodSelectMenuOpt += '<option value="' + avlAggMethods[aggVal].nickName + '">' +
+                avlAggMethods[aggVal].formalName + '</option>';
+            }
+          }
+
+          aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
+
+          aggMethodSelectMenu.value(currentAggregationObj.aggregationMethod.value);
+
+          // self.aggregation = {
+          //   timePeriod: currentAggregationObj.timePeriod,
+          //   timePeriodMultiplier: currentAggregationObj.timePeriodMultiplier,
+          //   aggregationMethod: currentAggregationObj.aggregationMethod.value
+          // };
+        };
+
+      self.getAvailablelAggreagation();
+
+      x = x === undefined ? measurement.x : x;
+      y = y === undefined ? measurement.y : y;
+      width = width === undefined ? measurement.width : width;
+      height = height === undefined ? measurement.height : height;
+      group = group === undefined ? self.parentGroup : group;
+      if (width && height) {
+        for (i = 0, ln = toolbars.length; i < ln; i++) {
+          toolbar = toolbars[i];
+          toolbar.draw(x, y);
+        }
+      }
+      onChange();
+
+      model.onPropsChange(['bin-size', 'aggregation-fn'],
+      function () {
+        onChange();
+      });
+    }
+
+    rangeChangeCallback () {
+      this.getValidAggregation();
+      this.draw();
+    }
+
+    dispose () {
+      // dispose extension
     }
   }
-
-  /**
-   * Reset Applied Aggregation
-   */
-  resetAggregation () {
-
-  }
-
-  init (require) {
-    var self = this;
-
-    require('X-Axis', 'chart', function (x, chart) {
-      self.x = x;
-      self.chart = chart;
-    });
-
-    this.getAvailablelAggreagation();
-    this.getValidAggregation();
-  }
-
-  placeInCanvas () {
-    // space management
-  }
-
-  draw () {
-    // var multiplierFld,
-    //   timePeriodFld,
-    //   AggMethodFld,
-    //   // chart = this.chart,
-    //   config = this.config,
-    //   // currentAggregation,
-    //   label,
-    //   mainCont = $('#mainCont'),
-    //   validTimePeriod = config.validTimePeriod,
-    //   validTimePeriodMultiplier = config.validTimePeriodMultiplier,
-    //   indexOfTimeUnit,
-    //   avlAggMethods = config.avlAggMethods,
-    //   timePeriodOnChange = function () {
-    //     var timePeriodVal = $('#time_period').val(),
-    //       timePeriodMultiplierVal = $('#mul').val(),
-    //       indexOfTimeUnit,
-    //       indexOfTimeMul;
-
-    //     indexOfTimeUnit = validTimePeriod.indexOf(timePeriodVal);
-    //     indexOfTimeMul = validTimePeriodMultiplier[indexOfTimeUnit].indexOf(Number(timePeriodMultiplierVal));
-
-    //     $('#mul').empty();
-    //     console.log(indexOfTimeUnit, indexOfTimeMul);
-
-    //     for (var mulVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
-    //       $('<option />', {text: mulVal}).appendTo(multiplierFld);
-    //     }
-
-    //     if (indexOfTimeMul < 0) {
-    //       $('#mul').val(validTimePeriodMultiplier[indexOfTimeUnit][0]);
-    //     } else {
-    //       $('#mul').val(timePeriodMultiplierVal);
-    //     }
-    //   };
-
-    // // currentAggregation = chart.getAggregation();
-
-    // if (mainCont.length === 0) {
-    //   return;
-    // }
-
-    // mainCont.empty();
-
-    // label = $('<label>').text('Aggregate Data: ');
-    // label.appendTo(mainCont);
-
-    // multiplierFld = $('<select id="mul"/>');
-    // timePeriodFld = $('<select id="time_period"/>');
-    // AggMethodFld = $('<select id="agg_method"/>');
-
-    // for (var unitVal of validTimePeriod) {
-    //   $('<option />', {text: unitVal}).appendTo(timePeriodFld);
-    // }
-
-    // indexOfTimeUnit = validTimePeriod.indexOf(validTimePeriod[0]);
-
-    // if (indexOfTimeUnit >= 0) {
-    //   for (var mulVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
-    //     $('<option />', {text: mulVal}).appendTo(multiplierFld);
-    //   }
-    // }
-
-    // for (var aggVal of avlAggMethods) {
-    //   $('<option />', {text: aggVal}).appendTo(AggMethodFld);
-    // }
-
-    // multiplierFld.appendTo(mainCont);
-    // // $('#mul').val(currentAggregation.timePeriodMultiplier);
-    // timePeriodFld.appendTo(mainCont);
-    // // $('#time_period').val(currentAggregation.timePeriod);
-    // AggMethodFld.appendTo(mainCont);
-    // // $('#agg_method').val(currentAggregation.aggregationMethod);
-
-    // $('<button/>').text('Apply').appendTo(mainCont);
-    // $('<button/>').text('Reset').appendTo(mainCont);
-
-    // $('#time_period').change(timePeriodOnChange);
-  }
-
-  rangeChangeCallback () {
-    this.getValidAggregation();
-    this.draw();
-  }
-
-  dispose () {
-    // dispose extension
-  }
-}
-
-module.exports = Aggregator;
+  return Aggregator;
+};

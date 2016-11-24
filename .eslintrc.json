@@ -1,3 +1,23 @@
+// {
+//     "extends": "standard",
+//     "plugins": [
+//         "standard",
+//         "promise"
+//     ],
+//     "rules": {
+//       "semi": [
+//         "error",
+//         "always"
+//       ],
+//       "one-var": [
+//         "off"
+//       ]
+//     },
+//     "globals": {
+//       "FusionCharts": true,
+//       "$": true
+//     }
+// }
 {
     "extends": "standard",
     "plugins": [

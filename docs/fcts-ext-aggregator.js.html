@@ -178,13 +178,16 @@ module.exports = function (dep) {
         currentAggMethod = model.prop('aggregation-fn');
       } else {
         config.canAggregate = false;
-        suitableInterval = composition.xAxis.getScaleObj().getIntervalObj().getConfig('intervals').minor.timeUnit;
+        suitableInterval = {
+          name: '',
+          step: ''
+        };
         config.validTimePeriod = [suitableInterval.name];
         config.validTimePeriodMultiplier = [[suitableInterval.step]];
         config.avlAggMethods = {
           'invalid': {
-            formalName: 'invalid',
-            nickName: 'invalid'
+            formalName: '',
+            nickName: ''
           }
         };
         currentAggMethod = config.avlAggMethods['invalid'];
@@ -324,7 +327,7 @@ module.exports = function (dep) {
           smartLabel: smartLabel,
           chartContainer: container
         },
-        apply = function (set) {
+        apply = (set) => {
           var model = config.composition.reactiveModel,
             timePeriodVal = timePeriodSelectMenu.value(),
             timePeriodMultiplierVal = timeMulSelectMenu.value(),
@@ -349,11 +352,11 @@ module.exports = function (dep) {
           } else {
             canvas.resetAggregation();
           }
-          // applyButton.updateVisual('disable');
-          // applyButton.updateVisual('enable');
+          // applyButton.updateVisual('disabled');
+          // applyButton.updateVisual('enabled');
         },
 
-        timePeriodOnChange = function () {
+        timePeriodOnChange = () => {
           var timePeriodVal = timePeriodSelectMenu.value(),
             timePeriodMultiplierVal = timeMulSelectMenu.value(),
             prevTimePeroidMulVal = timePeriodMultiplierVal,
@@ -404,7 +407,7 @@ module.exports = function (dep) {
 
       toolboxCompConfig.timePeriodSelectMenu = timePeriodSelectMenu = new toolbox.SelectSymbol({
         width: 90,
-        height: 20
+        height: 22
       }, dependencies, {
         innerHTML: '&lt;option value="time">Time Period&lt;/option>'
       }, {
@@ -419,7 +422,7 @@ module.exports = function (dep) {
 
       toolboxCompConfig.timeMulSelectMenu = timeMulSelectMenu = new toolbox.SelectSymbol({
         width: 50,
-        height: 20
+        height: 22
       }, dependencies, {
         innerHTML: '&lt;option value="number">Multiplier&lt;/option>'
       }, {
@@ -434,7 +437,7 @@ module.exports = function (dep) {
 
       toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({
         width: 90,
-        height: 20
+        height: 22
       }, dependencies, {
         innerHTML: '&lt;option value="Formula">Method&lt;/option>'
       }, {
@@ -609,6 +612,8 @@ module.exports = function (dep) {
         timePeriodSelectMenu = toolboxCompConfig.timePeriodSelectMenu,
         timeMulSelectMenu = toolboxCompConfig.timeMulSelectMenu,
         aggMethodSelectMenu = toolboxCompConfig.aggMethodSelectMenu,
+        applyButton = toolboxCompConfig.applyButton,
+        resetButton = toolboxCompConfig.resetButton,
         currentAggregationObj,
         measurement = self.measurement,
         toolbars = self.toolbars,
@@ -629,9 +634,7 @@ module.exports = function (dep) {
         aggVal,
         aggMethodSelectMenuOpt,
         avlAggMethods,
-        rangeOnChange = function () {
-          var attrStr = '';
-
+        rangeOnChange = () => {
           self.getValidAggregation();
           currentAggregationObj = self.getCurrentAggreation();
 
@@ -644,12 +647,22 @@ module.exports = function (dep) {
           avlAggMethods = config.avlAggMethods;
 
           if (!config.canAggregate) {
-            attrStr = 'disabled hidden';
+            timePeriodSelectMenu.updateVisual('disabled');
+            timeMulSelectMenu.updateVisual('disabled');
+            aggMethodSelectMenu.updateVisual('disabled');
+            applyButton.updateVisual('disabled');
+            resetButton.updateVisual('disabled');
+          } else {
+            timePeriodSelectMenu.updateVisual('enabled');
+            timeMulSelectMenu.updateVisual('enabled');
+            aggMethodSelectMenu.updateVisual('enabled');
+            applyButton.updateVisual('enabled');
+            resetButton.updateVisual('enabled');
           }
 
           for (timePeriodVal of validTimePeriod) {
-            timePeriodSelectMenuOpt += '&lt;option ' + attrStr + ' value="' + timePeriodVal + '">' +
-            timePeriodVal.toUpperCase() + '&lt;/option>';
+            timePeriodSelectMenuOpt += '&lt;option value="' + timePeriodVal + '">' +
+            timePeriodVal + '&lt;/option>';
           }
 
           timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
@@ -659,8 +672,8 @@ module.exports = function (dep) {
 
           if (indexOfTimeUnit >= 0) {
             for (multiplierVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
-              timeMulSelectMenuOpt += '&lt;option ' + attrStr + ' value="' + multiplierVal + '">' +
-              multiplierVal.toString().toUpperCase() + '&lt;/option>';
+              timeMulSelectMenuOpt += '&lt;option value="' + multiplierVal + '">' +
+              multiplierVal + '&lt;/option>';
             }
           }
 
@@ -668,8 +681,8 @@ module.exports = function (dep) {
           timeMulSelectMenu.value(currentAggregationObj.timePeriodMultiplier.toString());
 
           for (aggVal in avlAggMethods) {
-            aggMethodSelectMenuOpt += '&lt;option ' + attrStr + ' value="' +
-              avlAggMethods[aggVal].nickName + '">' + avlAggMethods[aggVal].formalName.toUpperCase() + '&lt;/option>';
+            aggMethodSelectMenuOpt += '&lt;option value="' +
+              avlAggMethods[aggVal].nickName + '">' + avlAggMethods[aggVal].formalName + '&lt;/option>';
           }
 
           aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
@@ -712,7 +725,7 @@ module.exports = function (dep) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Thu Nov 24 2016 11:38:57 GMT+0530 (IST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.2</a> on Fri Nov 25 2016 11:54:18 GMT+0530 (IST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -459,7 +459,38 @@ module.exports = function (dep) {
         }
       };
 
-      style = config.usrConfig.styles;
+      style = config.usrConfig.styles || {};
+
+      style = {
+        timeMultiplierInputField: {
+          enabled: (style.timeMultiplierInputField && style.timeMultiplierInputField.enabled) || {},
+          disabled: (style.timeMultiplierInputField && style.timeMultiplierInputField.disabled) || {}
+        },
+        timePeriodInputField: {
+          enabled: (style.timePeriodInputField && style.timePeriodInputField.enabled) || {},
+          disabled: (style.timePeriodInputField && style.timePeriodInputField.disabled) || {}
+        },
+        aggregationMethodInputField: {
+          enabled: (style.aggregationMethodInputField && style.aggregationMethodInputField.enabled) || {},
+          disabled: (style.aggregationMethodInputField && style.aggregationMethodInputField.disabled) || {}
+        },
+        dropDown: {
+          enabled: (style.dropDown && style.dropDown.enabled) || {},
+          normal: (style.dropDown && style.dropDown.normal) || {},
+          hover: (style.dropDown && style.dropDown.hover) || {}
+        },
+        applyButton: {
+          enabled: (style.applyButton && style.applyButton.enabled) || {},
+          disabled: (style.applyButton && style.applyButton.disabled) || {}
+        },
+        resetButton: {
+          enabled: (style.resetButton && style.resetButton.enabled) || {},
+          disabled: (style.resetButton && style.resetButton.disabled) || {}
+        },
+        base: {
+          font: (style.base && style.base.font) || {}
+        }
+      };
 
       group.setConfig({
         fill: '#fff',

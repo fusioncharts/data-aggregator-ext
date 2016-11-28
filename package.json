@@ -46,6 +46,13 @@
     "through2": "^2.0.1",
     "vinyl-named": "^1.1.0",
     "webpack": "^1.13.2",
-    "webpack-stream": "^3.2.0"
+    "webpack-stream": "^3.2.0",
+    "gulp-shell": "^0.5.2",
+    "jsdom": "^9.8.3",
+    "mocha-phantomjs": "^4.1.0",
+    "phantomjs": "^2.1.7"
+  },
+  "dependencies": {
+    "fusioncharts": "^3.11.3"
   }
 }

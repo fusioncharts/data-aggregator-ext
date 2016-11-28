@@ -17,8 +17,7 @@ module.exports = function (dep) {
        * @private
        */
       this.appliedAggregation = {
-        timePeriod: null,
-        timePeriodMultiplier: null,
+        binSize: null,
         aggregationMethod: null
       };
       this.config = {};
@@ -164,47 +163,6 @@ module.exports = function (dep) {
       };
     }
 
-    /**
-     * Set Aggregation on time series
-     * @param  {object} obj
-     * @property {string} timePeriod - The time interval of aggregation.
-     * @property {number} timePeriodMultiplier - The multiplier of time interval.
-     * @property {string} aggregationMethod - The method applied to aggregate.
-     */
-    setAggregation (obj) {
-      var avlAggMethods,
-        validTimePeriod,
-        timePeriodIndex,
-        validTimePeriodMultiplier,
-        config = this.config;
-
-      avlAggMethods = config.avlAggMethods;
-      validTimePeriod = config.validTimePeriod;
-      validTimePeriodMultiplier = config.validTimePeriodMultiplier;
-
-      // if (avlAggMethods.includes(obj.aggregationMethod) && validTimePeriod.includes(obj.timePeriod)) {
-      //   timePeriodIndex = validTimePeriod.indexOf(obj.timePeriod);
-      //   if (validTimePeriodMultiplier[timePeriodIndex].includes(Number(obj.timePeriodMultiplier))) {
-      //     this.aggregation = obj;
-      //     console.log(this.aggregation);
-      //     return true;
-      //   } else {
-      //     console.log(this.aggregation);
-      //     return false;
-      //   }
-      // } else {
-      //   console.log(this.aggregation);
-      //   return false;
-      // }
-    }
-
-    /**
-     * Reset Applied Aggregation
-     */
-    resetAggregation () {
-
-    }
-
     init (require) {
       var self = this,
         config = self.config,
@@ -280,7 +238,10 @@ module.exports = function (dep) {
         smartLabel = tsObject.smartLabel,
 
         multiplierVal,
-        timeMulSelectMenuOpt = '',
+        timeMulSelectMenuOpt,
+        selectMenuConfig,
+        dropDownMenuStyle,
+        buttonConfig,
 
         dependencies = {
           paper: paper,
@@ -294,7 +255,9 @@ module.exports = function (dep) {
             timePeriodMultiplierVal = timeMulSelectMenu.value(),
             aggMethodSelectMenuVal = aggMethodSelectMenu.value(),
             keys,
+            binSize,
             timeInterval,
+            aggregation = self.aggregation,
             canvas = config.composition.impl;
 
           for (keys of config.avlTimePeriods) {
@@ -303,18 +266,23 @@ module.exports = function (dep) {
               break;
             }
           }
-
+          binSize = timeInterval * Number(timePeriodMultiplierVal);
           if (set && isFinite(model.prop('bin-size'))) {
             model
               .lock()
-              .prop('bin-size-ext', (timeInterval * Number(timePeriodMultiplierVal)))
+              .prop('bin-size-ext', binSize)
               .prop('aggregation-fn-ext', config.avlAggMethods[aggMethodSelectMenuVal])
               .unlock();
+            aggregation.binSize = binSize;
+            aggregation.aggregationMethod = aggMethodSelectMenuVal;
+            applyButton.updateVisual('disabled');
+            resetButton.updateVisual('enabled');
           } else {
             canvas.resetAggregation();
+            aggregation.binSize = null;
+            aggregation.aggregationMethod = null;
+            resetButton.updateVisual('disabled');
           }
-          // applyButton.updateVisual('disabled');
-          // applyButton.updateVisual('enabled');
         },
 
         timePeriodOnChange = () => {
@@ -329,10 +297,12 @@ module.exports = function (dep) {
           indexOfTimeUnit = validTimePeriod.indexOf(timePeriodVal);
           indexOfTimeMul = validTimePeriodMultiplier[indexOfTimeUnit].indexOf(Number(timePeriodMultiplierVal));
 
-          // console.log(indexOfTimeUnit, indexOfTimeMul);
-          timeMulSelectMenuOpt = '';
+          timeMulSelectMenuOpt = [];
           for (multiplierVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
-            timeMulSelectMenuOpt += '<option value="' + multiplierVal + '">' + multiplierVal + '</option>';
+            timeMulSelectMenuOpt.push({
+              name: multiplierVal.toString(),
+              value: multiplierVal.toString()
+            });
           }
 
           timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
@@ -341,6 +311,34 @@ module.exports = function (dep) {
             timeMulSelectMenu.value(validTimePeriodMultiplier[indexOfTimeUnit][0].toString());
           } else {
             timeMulSelectMenu.value(prevTimePeroidMulVal);
+          }
+        },
+
+        onChange = (type) => {
+          var currentAgg = self.getCurrentAggreation();
+
+          switch (type) {
+            case 1:
+              if (currentAgg.timePeriodMultiplier.toString() !== timeMulSelectMenu.value()) {
+                applyButton.updateVisual('enabled');
+              } else {
+                applyButton.updateVisual('disabled');
+              }
+              break;
+            case 2:
+              if (currentAgg.timePeriod !== timePeriodSelectMenu.value()) {
+                applyButton.updateVisual('enabled');
+              } else {
+                applyButton.updateVisual('disabled');
+              }
+              break;
+            case 3:
+              if (currentAgg.aggregationMethod.value !== aggMethodSelectMenu.value()) {
+                applyButton.updateVisual('enabled');
+              } else {
+                applyButton.updateVisual('disabled');
+              }
+              break;
           }
         };
 
@@ -357,6 +355,70 @@ module.exports = function (dep) {
         borderThickness: 0
       });
 
+      selectMenuConfig = {
+        disabled: {
+          config: {
+            disabled: {
+              fill: '#fff',
+              'stroke-width': 3,
+              stroke: 'rgb(192, 192, 192)'
+            }
+          }
+        }
+      };
+
+      buttonConfig = {
+        disabled: {
+          config: {
+            disabled: {
+              fill: '#bebebe',
+              'stroke-width': 3,
+              stroke: 'rgb(192, 192, 192)',
+              labelFill: '#fff'
+            }
+          }
+        }
+      };
+
+      dropDownMenuStyle = {
+        selected: {
+          container: {
+            style: {
+              fill: '#898b8b'
+            }
+          },
+          text: {
+            style: {
+              fill: '#fff'
+            }
+          }
+        },
+        normal: {
+          container: {
+            style: {
+              fill: '#fff'
+            }
+          },
+          text: {
+            style: {
+              fill: '#000'
+            }
+          }
+        },
+        hover: {
+          container: {
+            style: {
+              fill: '#e6e8e8'
+            }
+          },
+          text: {
+            style: {
+              fill: '#000'
+            }
+          }
+        }
+      };
+
       label = new toolbox.Label('Aggregate Data:', dependencies, {
         text: {
           style: {
@@ -369,52 +431,68 @@ module.exports = function (dep) {
       toolboxCompConfig.timePeriodSelectMenu = timePeriodSelectMenu = new toolbox.SelectSymbol({
         width: 90,
         height: 22
-      }, dependencies, {
-        innerHTML: '<option value="time">Time Period</option>'
-      }, {
+      }, dependencies, [], {
+        fill: '#fff',
+        labelFill: '#696969',
+        hoverFill: '#fff',
+        hoverStroke: '#696969',
+        hoverStrokeWidth: 1,
         strokeWidth: 1,
-        stroke: 'rgba(102,102,102,0.5)',
+        radius: 1,
+        stroke: '#c8cecd',
         symbolStrokeWidth: 0,
         btnTextStyle: {
           fontSize: 11
         },
-        hoverFill: '#1e1f1f'
+        dropDownMenu: dropDownMenuStyle
       });
+      timePeriodSelectMenu.setStateConfig(selectMenuConfig);
 
       toolboxCompConfig.timeMulSelectMenu = timeMulSelectMenu = new toolbox.SelectSymbol({
         width: 50,
         height: 22
-      }, dependencies, {
-        innerHTML: '<option value="number">Multiplier</option>'
-      }, {
+      }, dependencies, [], {
+        fill: '#fff',
+        labelFill: '#696969',
+        hoverFill: '#fff',
+        hoverStroke: '#696969',
+        hoverStrokeWidth: 1,
         strokeWidth: 1,
-        stroke: 'rgba(102,102,102,0.5)',
+        radius: 1,
+        stroke: '#c8cecd',
         symbolStrokeWidth: 0,
         btnTextStyle: {
           fontSize: 11
         },
-        hoverFill: '#1e1f1f'
+        dropDownMenu: dropDownMenuStyle
       });
+      timeMulSelectMenu.setStateConfig(selectMenuConfig);
 
       toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({
         width: 90,
         height: 22
-      }, dependencies, {
-        innerHTML: '<option value="Formula">Method</option>'
-      }, {
+      }, dependencies, [], {
+        fill: '#fff',
+        labelFill: '#696969',
+        hoverFill: '#fff',
+        hoverStroke: '#696969',
+        hoverStrokeWidth: 1,
         strokeWidth: 1,
-        stroke: 'rgba(102,102,102,0.5)',
+        radius: 1,
+        stroke: '#c8cecd',
         symbolStrokeWidth: 0,
         btnTextStyle: {
           fontSize: 11
         },
-        hoverFill: '#1e1f1f'
+        dropDownMenu: dropDownMenuStyle
       });
+      aggMethodSelectMenu.setStateConfig(selectMenuConfig);
 
       toolboxCompConfig.applyButton = applyButton = new toolbox.Symbol('APPLY', true, dependencies, {
         fill: '#555',
-        labelFill: '#fff',
+        labelFill: '#f3f3f3',
         hoverFill: '#555',
+        radius: 1,
         width: 30,
         height: 20,
         btnTextStyle: {
@@ -425,10 +503,13 @@ module.exports = function (dep) {
           apply(1);
         }
       });
+      applyButton.setStateConfig(buttonConfig);
+
       toolboxCompConfig.resetButton = resetButton = new toolbox.Symbol('RESET', true, dependencies, {
         fill: '#898b8b',
-        labelFill: '#fff',
+        labelFill: '#f3f3f3',
         hoverFill: '#898b8b',
+        radius: 1,
         width: 30,
         height: 20,
         btnTextStyle: {
@@ -439,6 +520,7 @@ module.exports = function (dep) {
           apply(0);
         }
       });
+      resetButton.setStateConfig(buttonConfig);
 
       group.addSymbol(label);
       group.addSymbol(timeMulSelectMenu);
@@ -456,32 +538,22 @@ module.exports = function (dep) {
         return ['M', x1, y1, 'L', x2, y1, 'L', x2, y2, 'L', x1, y2, 'Z'];
       });
 
-      timeMulSelectMenu.attachEventHandlers({
-        click: {
-          fn: timeMulSelectMenu.edit
-        },
-        textOnBlur: function () {
-          timeMulSelectMenu.blur();
-        }
-      });
       timePeriodSelectMenu.attachEventHandlers({
-        click: {
-          fn: timePeriodSelectMenu.edit
-        },
-        textOnBlur: function () {
-          timePeriodSelectMenu.blur();
-        },
         textOnChange: function () {
-          timePeriodSelectMenu.blur();
           timePeriodOnChange();
+          onChange(2);
         }
       });
+
+      timeMulSelectMenu.attachEventHandlers({
+        textOnChange: function () {
+          onChange(1);
+        }
+      });
+
       aggMethodSelectMenu.attachEventHandlers({
-        click: {
-          fn: aggMethodSelectMenu.edit
-        },
-        textOnBlur: function () {
-          aggMethodSelectMenu.blur();
+        textOnChange: function () {
+          onChange(3);
         }
       });
 
@@ -575,13 +647,13 @@ module.exports = function (dep) {
         aggMethodSelectMenu = toolboxCompConfig.aggMethodSelectMenu,
         applyButton = toolboxCompConfig.applyButton,
         resetButton = toolboxCompConfig.resetButton,
-        currentAggregationObj,
         measurement = self.measurement,
         toolbars = self.toolbars,
         ln,
         i,
         toolbar,
         model = config.composition.reactiveModel,
+        dataAgg = config.dataAgg,
 
         timePeriodVal,
         timePeriodSelectMenuOpt,
@@ -596,58 +668,81 @@ module.exports = function (dep) {
         aggMethodSelectMenuOpt,
         avlAggMethods,
         rangeOnChange = () => {
+          var aggregation = self.aggregation,
+            currentAggregationObj,
+            timePeriod,
+            timePeriodMultiplier,
+            aggregationMethod;
+
           self.getValidAggregation();
           currentAggregationObj = self.getCurrentAggreation();
+          timePeriod = currentAggregationObj.timePeriod;
+          timePeriodMultiplier = currentAggregationObj.timePeriodMultiplier;
+          aggregationMethod = currentAggregationObj.aggregationMethod;
 
-          timePeriodSelectMenuOpt = '';
-          timeMulSelectMenuOpt = '';
-          aggMethodSelectMenuOpt = '';
+          timePeriodSelectMenuOpt = [];
+          timeMulSelectMenuOpt = [];
+          aggMethodSelectMenuOpt = [];
 
           validTimePeriod = config.validTimePeriod;
           validTimePeriodMultiplier = config.validTimePeriodMultiplier;
           avlAggMethods = config.avlAggMethods;
 
+          applyButton.updateVisual('disabled');
+
+          if (aggregation.binSize !== model.prop('bin-size') &&
+            aggregationMethod.value === config.defaultAggMethod) {
+            aggregation.binSize = null;
+            aggregation.aggregationMethod = null;
+            resetButton.updateVisual('disabled');
+          } else {
+            resetButton.updateVisual('enabled');
+          }
+
           if (!config.canAggregate) {
             timePeriodSelectMenu.updateVisual('disabled');
             timeMulSelectMenu.updateVisual('disabled');
             aggMethodSelectMenu.updateVisual('disabled');
-            applyButton.updateVisual('disabled');
             resetButton.updateVisual('disabled');
           } else {
             timePeriodSelectMenu.updateVisual('enabled');
             timeMulSelectMenu.updateVisual('enabled');
             aggMethodSelectMenu.updateVisual('enabled');
-            applyButton.updateVisual('enabled');
-            resetButton.updateVisual('enabled');
           }
 
           for (timePeriodVal of validTimePeriod) {
-            timePeriodSelectMenuOpt += '<option value="' + timePeriodVal + '">' +
-            timePeriodVal + '</option>';
+            timePeriodSelectMenuOpt.push({
+              name: timePeriodVal,
+              value: timePeriodVal
+            });
           }
 
           timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
-          timePeriodSelectMenu.value(currentAggregationObj.timePeriod);
+          timePeriodSelectMenu.value(timePeriod);
 
-          indexOfTimeUnit = validTimePeriod.indexOf(currentAggregationObj.timePeriod);
+          indexOfTimeUnit = validTimePeriod.indexOf(timePeriod);
 
           if (indexOfTimeUnit >= 0) {
             for (multiplierVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
-              timeMulSelectMenuOpt += '<option value="' + multiplierVal + '">' +
-              multiplierVal + '</option>';
+              timeMulSelectMenuOpt.push({
+                name: multiplierVal.toString(),
+                value: multiplierVal.toString()
+              });
             }
           }
 
           timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
-          timeMulSelectMenu.value(currentAggregationObj.timePeriodMultiplier.toString());
+          timeMulSelectMenu.value(timePeriodMultiplier.toString());
 
           for (aggVal in avlAggMethods) {
-            aggMethodSelectMenuOpt += '<option value="' +
-              avlAggMethods[aggVal].nickName + '">' + avlAggMethods[aggVal].formalName + '</option>';
+            aggMethodSelectMenuOpt.push({
+              name: avlAggMethods[aggVal].formalName,
+              value: avlAggMethods[aggVal].nickName
+            });
           }
 
           aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
-          aggMethodSelectMenu.value(currentAggregationObj.aggregationMethod.value);
+          aggMethodSelectMenu.value(aggregationMethod.value);
         };
 
       self.getAvailablelAggreagation();
@@ -664,6 +759,9 @@ module.exports = function (dep) {
         }
       }
       rangeOnChange();
+      applyButton.updateVisual('disabled');
+      resetButton.updateVisual('disabled');
+      config.defaultAggMethod = dataAgg.getDefaultAggregationMethod().nickName;
 
       model.onPropsChange(['bin-size', 'aggregation-fn'], rangeOnChange);
     }

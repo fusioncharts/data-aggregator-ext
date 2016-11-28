@@ -13,11 +13,14 @@
   </style>
 </head>
 <body>
-  <script src="http://192.168.0.59:8888/data-aggregator-ext/bower_components/fusioncharts/fusioncharts.js" charset="utf-8"></script>
-  <script src="http://192.168.0.59:8888/data-aggregator-ext/bower_components/fusioncharts/fusioncharts.timeseries.js" charset="utf-8"></script>
+  <script src="node_modules/fusioncharts/fusioncharts.js" charset="utf-8"></script>
+  <script src="node_modules/fusioncharts/fusioncharts.timeseries.js" charset="utf-8"></script>
 
   <!-- <script src="http://192.168.0.76:8888/out/build/source/fusioncharts.js" charset="utf-8"></script>
   <script src="http://192.168.0.76:8888/out/build/source/fusioncharts.timeseries.js" charset="utf-8"></script> -->
+
+  <!-- <script src="http://192.168.0.106/fusioncharts/repos/xt-edge/out/build/source/fusioncharts.js" charset="utf-8"></script>
+  <script src="http://192.168.0.106/fusioncharts/repos/xt-edge/out/build/source/fusioncharts.timeseries.js" charset="utf-8"></script> -->
 
   <script src="dist/fcts-ext-dataaggregator-es6.min.js" charset="utf-8"></script>
   <!-- <script src="dist/sampleExt.js" charset="utf-8"></script> -->
@@ -160,17 +163,6 @@
                                             name: "Series 1",
                                             data: getRandomSeries(10000)
                                         }
-                                        // {
-                                        //     plot: {
-                                        //         type: "line",
-                                        //         style: {
-                                        //           stroke: '#ff0000',
-                                        //           'stroke-width': 2
-                                        //         }
-                                        //     },
-                                        //     name: "Series 1",
-                                        //     data: getRandomSeries(20)
-                                        // }
 
                                     ]
                                 }
@@ -198,8 +190,6 @@
 
             })
             .render();
-
-        console.log(data1);
         });
 
 // ,

@@ -349,7 +349,7 @@ module.exports = function (dep) {
               'hoverStroke': '#696969',
               'hoverStrokeWidth': 1,
               'radius': 1,
-              'width': 50,
+              'width': 45,
               'height': 22
             },
             disabled: {
@@ -368,7 +368,7 @@ module.exports = function (dep) {
               'hoverStroke': '#696969',
               'hoverStrokeWidth': 1,
               'radius': 1,
-              'width': 90,
+              'width': 75,
               'height': 22
             },
             disabled: {
@@ -387,7 +387,7 @@ module.exports = function (dep) {
               'hoverStroke': '#696969',
               'hoverStrokeWidth': 1,
               'radius': 1,
-              'width': 90,
+              'width': 100,
               'height': 22
             },
             disabled: {

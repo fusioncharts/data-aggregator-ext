@@ -278,9 +278,14 @@ module.exports = function (dep) {
 
         multiplierVal,
         timeMulSelectMenuOpt,
-        selectMenuConfig,
+        timePeriodMenuDisableConfig,
+        timeMultiplierMenuDisableConfig,
+        aggMethodMenuDisableonfig,
         dropDownMenuStyle,
-        buttonConfig,
+        applyButtonDisableConfig,
+        resetButtonDisableConfig,
+
+        style,
 
         dependencies = {
           paper: paper,
@@ -356,33 +361,144 @@ module.exports = function (dep) {
         onChange = (type) => {
           var currentAgg = self.getCurrentAggreation();
 
-          switch (type) {
-            case 1:
-              if (currentAgg.timePeriodMultiplier.toString() !== timeMulSelectMenu.value()) {
-                applyButton.updateVisual('enabled');
-              } else {
-                applyButton.updateVisual('disabled');
-              }
-              break;
-            case 2:
-              if (currentAgg.timePeriod !== timePeriodSelectMenu.value()) {
-                applyButton.updateVisual('enabled');
-              } else {
-                applyButton.updateVisual('disabled');
-              }
-              break;
-            case 3:
-              if (currentAgg.aggregationMethod.value !== aggMethodSelectMenu.value()) {
-                applyButton.updateVisual('enabled');
-              } else {
-                applyButton.updateVisual('disabled');
-              }
-              break;
+          if (currentAgg.timePeriodMultiplier.toString() !== timeMulSelectMenu.value() ||
+            currentAgg.timePeriod !== timePeriodSelectMenu.value() ||
+            currentAgg.aggregationMethod.value !== aggMethodSelectMenu.value()) {
+            applyButton.updateVisual('enabled');
+          } else {
+            applyButton.updateVisual('disabled');
           }
         };
 
       group = new ComponentGroup(dependencies);
       toolbar = new HorizontalToolbar(dependencies);
+
+      config.usrConfig = {
+        enabled: true,
+        posWrtCanvas: 'top',
+        alignment: 'left',
+        orientation: 'horizontal',
+        styles: {
+          timeMultiplierInputField: {
+            enabled: {
+              'fill': '#fff',
+              'labelFill': '#696969',
+              'stroke': '#c8cecd',
+              'strokeWidth': 1,
+              'hoverStroke': '#696969',
+              'hoverStrokeWidth': 1,
+              'radius': 1,
+              'width': 50,
+              'height': 22
+            },
+            disabled: {
+              'fill': '#fff',
+              'stroke-width': 1,
+              'stroke': 'rgb(192, 192, 192)',
+              'labelFill': '#000'
+            }
+          },
+          timePeriodInputField: {
+            enabled: {
+              'fill': '#fff',
+              'labelFill': '#696969',
+              'stroke': '#c8cecd',
+              'strokeWidth': 1,
+              'hoverStroke': '#696969',
+              'hoverStrokeWidth': 1,
+              'radius': 1,
+              'width': 90,
+              'height': 22
+            },
+            disabled: {
+              'fill': '#fff',
+              'stroke-width': 1,
+              'stroke': 'rgb(192, 192, 192)',
+              'labelFill': '#000'
+            }
+          },
+          aggregationMethodInputField: {
+            enabled: {
+              'fill': '#fff',
+              'labelFill': '#696969',
+              'stroke': '#c8cecd',
+              'strokeWidth': 1,
+              'hoverStroke': '#696969',
+              'hoverStrokeWidth': 1,
+              'radius': 1,
+              'width': 90,
+              'height': 22
+            },
+            disabled: {
+              'fill': '#fff',
+              'stroke-width': 1,
+              'stroke': 'rgb(192, 192, 192)',
+              'labelFill': '#000'
+            }
+          },
+          dropDown: {
+            enabled: {
+              'fill': '#898b8b',
+              'labelFill': '#fff'
+            },
+            normal: {
+              'fill': '#fff',
+              'labelFill': '#000'
+            },
+            hover: {
+              'fill': '#e6e8e8',
+              'labelFill': '#000'
+            }
+          },
+          applyButton: {
+            enabled: {
+              'fill': '#555',
+              'labelFill': '#f3f3f3',
+              'stroke': '#c8cecd',
+              'strokeWidth': 1,
+              'hoverFill': '#555',
+              'hoverStrokeWidth': 1,
+              'hoverStroke': '',
+              'radius': 1,
+              'width': 30,
+              'height': 20
+            },
+            disabled: {
+              'fill': '#bebebe',
+              'stroke-width': 3,
+              'stroke': 'rgb(192, 192, 192)',
+              'labelFill': '#f3f3f3'
+            }
+          },
+          resetButton: {
+            enabled: {
+              'fill': '#898b8b',
+              'labelFill': '#f3f3f3',
+              'stroke': '#c8cecd',
+              'strokeWidth': 1,
+              'hoverFill': '#898b8b',
+              'hoverStrokeWidth': 1,
+              'hoverStroke': '',
+              'radius': 1,
+              'width': 30,
+              'height': 20
+            },
+            disabled: {
+              'fill': '#bebebe',
+              'stroke-width': 3,
+              'stroke': 'rgb(192, 192, 192)',
+              'labelFill': '#f3f3f3'
+            }
+          },
+          base: {
+            font: {
+              'fontSize': 11
+            }
+          }
+        }
+      };
+
+      style = config.usrConfig.styles;
 
       group.setConfig({
         fill: '#fff',
@@ -394,27 +510,42 @@ module.exports = function (dep) {
         borderThickness: 0
       });
 
-      selectMenuConfig = {
+      timePeriodMenuDisableConfig = {
         disabled: {
           config: {
-            disabled: {
-              fill: '#fff',
-              'stroke-width': 3,
-              stroke: 'rgb(192, 192, 192)'
-            }
+            disabled: style.timeMultiplierInputField.disabled
           }
         }
       };
 
-      buttonConfig = {
+      timeMultiplierMenuDisableConfig = {
         disabled: {
           config: {
-            disabled: {
-              fill: '#bebebe',
-              'stroke-width': 3,
-              stroke: 'rgb(192, 192, 192)',
-              labelFill: '#fff'
-            }
+            disabled: style.timePeriodInputField.disabled
+          }
+        }
+      };
+
+      aggMethodMenuDisableonfig = {
+        disabled: {
+          config: {
+            disabled: style.aggregationMethodInputField.disabled
+          }
+        }
+      };
+
+      applyButtonDisableConfig = {
+        disabled: {
+          config: {
+            disabled: style.applyButton.disabled
+          }
+        }
+      };
+
+      resetButtonDisableConfig = {
+        disabled: {
+          config: {
+            disabled: style.resetButton.disabled
           }
         }
       };
@@ -423,36 +554,36 @@ module.exports = function (dep) {
         selected: {
           container: {
             style: {
-              fill: '#898b8b'
+              fill: style.dropDown.enabled.fill
             }
           },
           text: {
             style: {
-              fill: '#fff'
+              fill: style.dropDown.enabled.labelFill
             }
           }
         },
         normal: {
           container: {
             style: {
-              fill: '#fff'
+              fill: style.dropDown.normal.fill
             }
           },
           text: {
             style: {
-              fill: '#000'
+              fill: style.dropDown.normal.labelFill
             }
           }
         },
         hover: {
           container: {
             style: {
-              fill: '#e6e8e8'
+              fill: style.dropDown.hover.fill
             }
           },
           text: {
             style: {
-              fill: '#000'
+              fill: style.dropDown.hover.labelFill
             }
           }
         }
@@ -467,99 +598,58 @@ module.exports = function (dep) {
         }
       });
 
-      toolboxCompConfig.timePeriodSelectMenu = timePeriodSelectMenu = new toolbox.SelectSymbol({
-        width: 90,
-        height: 22
-      }, dependencies, [], {
-        fill: '#fff',
-        labelFill: '#696969',
-        hoverFill: '#fff',
-        hoverStroke: '#696969',
-        hoverStrokeWidth: 1,
-        strokeWidth: 1,
-        radius: 1,
-        stroke: '#c8cecd',
-        symbolStrokeWidth: 0,
+      toolboxCompConfig.timePeriodSelectMenu = timePeriodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
+      Object.assign(style.timePeriodInputField.enabled, {
         btnTextStyle: {
-          fontSize: 11
+          fontSize: style.base.font.fontSize
         },
         dropDownMenu: dropDownMenuStyle
-      });
-      timePeriodSelectMenu.setStateConfig(selectMenuConfig);
+      }));
+      timePeriodSelectMenu.setStateConfig(timePeriodMenuDisableConfig);
 
-      toolboxCompConfig.timeMulSelectMenu = timeMulSelectMenu = new toolbox.SelectSymbol({
-        width: 50,
-        height: 22
-      }, dependencies, [], {
-        fill: '#fff',
-        labelFill: '#696969',
-        hoverFill: '#fff',
-        hoverStroke: '#696969',
-        hoverStrokeWidth: 1,
-        strokeWidth: 1,
-        radius: 1,
-        stroke: '#c8cecd',
-        symbolStrokeWidth: 0,
+      toolboxCompConfig.timeMulSelectMenu = timeMulSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
+      Object.assign(style.timeMultiplierInputField.enabled, {
         btnTextStyle: {
-          fontSize: 11
+          fontSize: style.base.font.fontSize
         },
         dropDownMenu: dropDownMenuStyle
-      });
-      timeMulSelectMenu.setStateConfig(selectMenuConfig);
+      }));
+      timeMulSelectMenu.setStateConfig(timeMultiplierMenuDisableConfig);
 
-      toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({
-        width: 90,
-        height: 22
-      }, dependencies, [], {
-        fill: '#fff',
-        labelFill: '#696969',
-        hoverFill: '#fff',
-        hoverStroke: '#696969',
-        hoverStrokeWidth: 1,
-        strokeWidth: 1,
-        radius: 1,
-        stroke: '#c8cecd',
-        symbolStrokeWidth: 0,
+      toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
+      Object.assign(style.aggregationMethodInputField.enabled, {
         btnTextStyle: {
-          fontSize: 11
+          fontSize: style.base.font.fontSize
         },
         dropDownMenu: dropDownMenuStyle
-      });
-      aggMethodSelectMenu.setStateConfig(selectMenuConfig);
+      }));
+      aggMethodSelectMenu.setStateConfig(aggMethodMenuDisableonfig);
 
-      toolboxCompConfig.applyButton = applyButton = new toolbox.Symbol('APPLY', true, dependencies, {
-        fill: '#555',
-        labelFill: '#f3f3f3',
-        hoverFill: '#555',
-        radius: 1,
-        width: 30,
-        height: 20,
-        btnTextStyle: {
-          fontSize: 11
-        }
-      }).attachEventHandlers({
-        click: function () {
-          apply(1);
-        }
-      });
-      applyButton.setStateConfig(buttonConfig);
+      toolboxCompConfig.applyButton = applyButton = new toolbox.Symbol('APPLY', true, dependencies,
+        Object.assign(style.applyButton.enabled, {
+          btnTextStyle: {
+            fontSize: style.base.font.fontSize
+          }
+        }))
+        .attachEventHandlers({
+          click: function () {
+            apply(1);
+          }
+        });
+      applyButton.setStateConfig(applyButtonDisableConfig);
 
-      toolboxCompConfig.resetButton = resetButton = new toolbox.Symbol('RESET', true, dependencies, {
-        fill: '#898b8b',
-        labelFill: '#f3f3f3',
-        hoverFill: '#898b8b',
-        radius: 1,
-        width: 30,
-        height: 20,
-        btnTextStyle: {
-          fontSize: 11
-        }
-      }).attachEventHandlers({
-        click: function () {
-          apply(0);
-        }
-      });
-      resetButton.setStateConfig(buttonConfig);
+      toolboxCompConfig.resetButton = resetButton = new toolbox.Symbol('RESET', true, dependencies,
+        Object.assign(style.resetButton.enabled, {
+          btnTextStyle: {
+            fontSize: style.base.font.fontSize
+          }
+        }))
+        .attachEventHandlers({
+          click: function () {
+            apply(0);
+          }
+        });
+      resetButton.setStateConfig(resetButtonDisableConfig);
 
       group.addSymbol(label);
       group.addSymbol(timeMulSelectMenu);
@@ -580,19 +670,19 @@ module.exports = function (dep) {
       timePeriodSelectMenu.attachEventHandlers({
         textOnChange: function () {
           timePeriodOnChange();
-          onChange(2);
+          onChange();
         }
       });
 
       timeMulSelectMenu.attachEventHandlers({
         textOnChange: function () {
-          onChange(1);
+          onChange();
         }
       });
 
       aggMethodSelectMenu.attachEventHandlers({
         textOnChange: function () {
-          onChange(3);
+          onChange();
         }
       });
 
@@ -823,7 +913,7 @@ module.exports = function (dep) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Nov 28 2016 19:59:32 GMT+0530 (IST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Nov 29 2016 00:47:11 GMT+0530 (IST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

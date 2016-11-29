@@ -341,7 +341,7 @@ module.exports = function (dep) {
         orientation: 'horizontal',
         styles: {
           timeMultiplierInputField: {
-            enabled: {
+            active: {
               'fill': '#fff',
               'labelFill': '#696969',
               'stroke': '#c8cecd',
@@ -352,7 +352,7 @@ module.exports = function (dep) {
               'width': 45,
               'height': 22
             },
-            disabled: {
+            inactive: {
               'fill': '#fff',
               'stroke-width': 1,
               'stroke': 'rgb(192, 192, 192)',
@@ -360,7 +360,7 @@ module.exports = function (dep) {
             }
           },
           timePeriodInputField: {
-            enabled: {
+            active: {
               'fill': '#fff',
               'labelFill': '#696969',
               'stroke': '#c8cecd',
@@ -371,7 +371,7 @@ module.exports = function (dep) {
               'width': 75,
               'height': 22
             },
-            disabled: {
+            inactive: {
               'fill': '#fff',
               'stroke-width': 1,
               'stroke': 'rgb(192, 192, 192)',
@@ -379,7 +379,7 @@ module.exports = function (dep) {
             }
           },
           aggregationMethodInputField: {
-            enabled: {
+            active: {
               'fill': '#fff',
               'labelFill': '#696969',
               'stroke': '#c8cecd',
@@ -390,7 +390,7 @@ module.exports = function (dep) {
               'width': 100,
               'height': 22
             },
-            disabled: {
+            inactive: {
               'fill': '#fff',
               'stroke-width': 1,
               'stroke': 'rgb(192, 192, 192)',
@@ -398,21 +398,19 @@ module.exports = function (dep) {
             }
           },
           dropDown: {
-            enabled: {
+            active: {
               'fill': '#898b8b',
               'labelFill': '#fff'
             },
             normal: {
               'fill': '#fff',
-              'labelFill': '#000'
-            },
-            hover: {
-              'fill': '#e6e8e8',
-              'labelFill': '#000'
+              'labelFill': '#000',
+              'hoverFill': '#e6e8e8',
+              'hoverLabelFill': '#000'
             }
           },
           applyButton: {
-            enabled: {
+            active: {
               'fill': '#555',
               'labelFill': '#f3f3f3',
               'stroke': '#c8cecd',
@@ -424,7 +422,7 @@ module.exports = function (dep) {
               'width': 30,
               'height': 20
             },
-            disabled: {
+            inactive: {
               'fill': '#bebebe',
               'stroke-width': 3,
               'stroke': 'rgb(192, 192, 192)',
@@ -432,7 +430,7 @@ module.exports = function (dep) {
             }
           },
           resetButton: {
-            enabled: {
+            active: {
               'fill': '#898b8b',
               'labelFill': '#f3f3f3',
               'stroke': '#c8cecd',
@@ -444,7 +442,7 @@ module.exports = function (dep) {
               'width': 30,
               'height': 20
             },
-            disabled: {
+            inactive: {
               'fill': '#bebebe',
               'stroke-width': 3,
               'stroke': 'rgb(192, 192, 192)',
@@ -463,29 +461,28 @@ module.exports = function (dep) {
 
       style = {
         timeMultiplierInputField: {
-          enabled: (style.timeMultiplierInputField && style.timeMultiplierInputField.enabled) || {},
-          disabled: (style.timeMultiplierInputField && style.timeMultiplierInputField.disabled) || {}
+          active: (style.timeMultiplierInputField && style.timeMultiplierInputField.active) || {},
+          inactive: (style.timeMultiplierInputField && style.timeMultiplierInputField.inactive) || {}
         },
         timePeriodInputField: {
-          enabled: (style.timePeriodInputField && style.timePeriodInputField.enabled) || {},
-          disabled: (style.timePeriodInputField && style.timePeriodInputField.disabled) || {}
+          active: (style.timePeriodInputField && style.timePeriodInputField.active) || {},
+          inactive: (style.timePeriodInputField && style.timePeriodInputField.inactive) || {}
         },
         aggregationMethodInputField: {
-          enabled: (style.aggregationMethodInputField && style.aggregationMethodInputField.enabled) || {},
-          disabled: (style.aggregationMethodInputField && style.aggregationMethodInputField.disabled) || {}
+          active: (style.aggregationMethodInputField && style.aggregationMethodInputField.active) || {},
+          inactive: (style.aggregationMethodInputField && style.aggregationMethodInputField.inactive) || {}
         },
         dropDown: {
-          enabled: (style.dropDown && style.dropDown.enabled) || {},
-          normal: (style.dropDown && style.dropDown.normal) || {},
-          hover: (style.dropDown && style.dropDown.hover) || {}
+          active: (style.dropDown && style.dropDown.active) || {},
+          normal: (style.dropDown && style.dropDown.normal) || {}
         },
         applyButton: {
-          enabled: (style.applyButton && style.applyButton.enabled) || {},
-          disabled: (style.applyButton && style.applyButton.disabled) || {}
+          active: (style.applyButton && style.applyButton.active) || {},
+          inactive: (style.applyButton && style.applyButton.inactive) || {}
         },
         resetButton: {
-          enabled: (style.resetButton && style.resetButton.enabled) || {},
-          disabled: (style.resetButton && style.resetButton.disabled) || {}
+          active: (style.resetButton && style.resetButton.active) || {},
+          inactive: (style.resetButton && style.resetButton.inactive) || {}
         },
         base: {
           font: (style.base && style.base.font) || {}
@@ -505,7 +502,7 @@ module.exports = function (dep) {
       timePeriodMenuDisableConfig = {
         disabled: {
           config: {
-            disabled: style.timeMultiplierInputField.disabled
+            disabled: style.timeMultiplierInputField.inactive
           }
         }
       };
@@ -513,7 +510,7 @@ module.exports = function (dep) {
       timeMultiplierMenuDisableConfig = {
         disabled: {
           config: {
-            disabled: style.timePeriodInputField.disabled
+            disabled: style.timePeriodInputField.inactive
           }
         }
       };
@@ -521,7 +518,7 @@ module.exports = function (dep) {
       aggMethodMenuDisableonfig = {
         disabled: {
           config: {
-            disabled: style.aggregationMethodInputField.disabled
+            disabled: style.aggregationMethodInputField.inactive
           }
         }
       };
@@ -529,7 +526,7 @@ module.exports = function (dep) {
       applyButtonDisableConfig = {
         disabled: {
           config: {
-            disabled: style.applyButton.disabled
+            disabled: style.applyButton.inactive
           }
         }
       };
@@ -537,7 +534,7 @@ module.exports = function (dep) {
       resetButtonDisableConfig = {
         disabled: {
           config: {
-            disabled: style.resetButton.disabled
+            disabled: style.resetButton.inactive
           }
         }
       };
@@ -546,12 +543,12 @@ module.exports = function (dep) {
         selected: {
           container: {
             style: {
-              fill: style.dropDown.enabled.fill
+              fill: style.dropDown.active.fill
             }
           },
           text: {
             style: {
-              fill: style.dropDown.enabled.labelFill
+              fill: style.dropDown.active.labelFill
             }
           }
         },
@@ -570,12 +567,12 @@ module.exports = function (dep) {
         hover: {
           container: {
             style: {
-              fill: style.dropDown.hover.fill
+              fill: style.dropDown.normal.hoverFill
             }
           },
           text: {
             style: {
-              fill: style.dropDown.hover.labelFill
+              fill: style.dropDown.normal.hoverLabelFill
             }
           }
         }
@@ -591,7 +588,7 @@ module.exports = function (dep) {
       });
 
       toolboxCompConfig.timePeriodSelectMenu = timePeriodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
-      Object.assign(style.timePeriodInputField.enabled, {
+      Object.assign(style.timePeriodInputField.active, {
         btnTextStyle: {
           fontSize: style.base.font.fontSize
         },
@@ -600,7 +597,7 @@ module.exports = function (dep) {
       timePeriodSelectMenu.setStateConfig(timePeriodMenuDisableConfig);
 
       toolboxCompConfig.timeMulSelectMenu = timeMulSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
-      Object.assign(style.timeMultiplierInputField.enabled, {
+      Object.assign(style.timeMultiplierInputField.active, {
         btnTextStyle: {
           fontSize: style.base.font.fontSize
         },
@@ -609,7 +606,7 @@ module.exports = function (dep) {
       timeMulSelectMenu.setStateConfig(timeMultiplierMenuDisableConfig);
 
       toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
-      Object.assign(style.aggregationMethodInputField.enabled, {
+      Object.assign(style.aggregationMethodInputField.active, {
         btnTextStyle: {
           fontSize: style.base.font.fontSize
         },
@@ -618,7 +615,7 @@ module.exports = function (dep) {
       aggMethodSelectMenu.setStateConfig(aggMethodMenuDisableonfig);
 
       toolboxCompConfig.applyButton = applyButton = new toolbox.Symbol('APPLY', true, dependencies,
-        Object.assign(style.applyButton.enabled, {
+        Object.assign(style.applyButton.active, {
           btnTextStyle: {
             fontSize: style.base.font.fontSize
           }
@@ -631,7 +628,7 @@ module.exports = function (dep) {
       applyButton.setStateConfig(applyButtonDisableConfig);
 
       toolboxCompConfig.resetButton = resetButton = new toolbox.Symbol('RESET', true, dependencies,
-        Object.assign(style.resetButton.enabled, {
+        Object.assign(style.resetButton.active, {
           btnTextStyle: {
             fontSize: style.base.font.fontSize
           }

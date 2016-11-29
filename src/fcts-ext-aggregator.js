@@ -457,6 +457,9 @@ module.exports = function (dep) {
           base: {
             font: {
               'fontSize': 11
+              // 'fontWeight': 'bold',
+              // 'fontFamily': 'sans-serif',
+              // 'fontStyle': 'italic'
             }
           }
         }
@@ -602,36 +605,28 @@ module.exports = function (dep) {
 
       toolboxCompConfig.timePeriodSelectMenu = timePeriodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
       Object.assign(style.timePeriodInputField.active, {
-        btnTextStyle: {
-          fontSize: style.base.font.fontSize
-        },
+        btnTextStyle: style.base.font,
         dropDownMenu: dropDownMenuStyle
       }));
       timePeriodSelectMenu.setStateConfig(timePeriodMenuDisableConfig);
 
       toolboxCompConfig.timeMulSelectMenu = timeMulSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
       Object.assign(style.timeMultiplierInputField.active, {
-        btnTextStyle: {
-          fontSize: style.base.font.fontSize
-        },
+        btnTextStyle: style.base.font,
         dropDownMenu: dropDownMenuStyle
       }));
       timeMulSelectMenu.setStateConfig(timeMultiplierMenuDisableConfig);
 
       toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
       Object.assign(style.aggregationMethodInputField.active, {
-        btnTextStyle: {
-          fontSize: style.base.font.fontSize
-        },
+        btnTextStyle: style.base.font,
         dropDownMenu: dropDownMenuStyle
       }));
       aggMethodSelectMenu.setStateConfig(aggMethodMenuDisableonfig);
 
       toolboxCompConfig.applyButton = applyButton = new toolbox.Symbol('APPLY', true, dependencies,
         Object.assign(style.applyButton.active, {
-          btnTextStyle: {
-            fontSize: style.base.font.fontSize
-          }
+          btnTextStyle: style.base.font
         }))
         .attachEventHandlers({
           click: function () {
@@ -642,9 +637,7 @@ module.exports = function (dep) {
 
       toolboxCompConfig.resetButton = resetButton = new toolbox.Symbol('RESET', true, dependencies,
         Object.assign(style.resetButton.active, {
-          btnTextStyle: {
-            fontSize: style.base.font.fontSize
-          }
+          btnTextStyle: style.base.font
         }))
         .attachEventHandlers({
           click: function () {

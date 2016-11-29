@@ -441,7 +441,7 @@ module.exports = function (dep) {
             },
             inactive: {
               'fill': '#bebebe',
-              'stroke-width': 3,
+              'stroke-width': 1,
               'stroke': 'rgb(192, 192, 192)',
               'labelFill': '#f3f3f3'
             }
@@ -461,7 +461,7 @@ module.exports = function (dep) {
             },
             inactive: {
               'fill': '#bebebe',
-              'stroke-width': 3,
+              'stroke-width': 1,
               'stroke': 'rgb(192, 192, 192)',
               'labelFill': '#f3f3f3'
             }

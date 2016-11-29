@@ -8,8 +8,7 @@ module.exports = function (dep) {
     /**
      * Create a Aggregator.
      * @typedef {object} Aggregator.aggregation
-     * @property {string} timePeriod - The time interval of aggregation.
-     * @property {number} timePeriodMultiplier - The multiplier of time interval.
+     * @property {string} binSize - The binSize applied to aggregate.
      * @property {string} aggregationMethod - The method applied to aggregate.
      */
     constructor () {
@@ -24,7 +23,7 @@ module.exports = function (dep) {
     }
 
     /**
-     * An object representing the timePeriod, timePeriodMultiplier, aggregationMethod.
+     * An object representing the binSize, aggregationMethod.
      * @type {Aggregator.aggregation}
      */
     get aggregation () {
@@ -71,16 +70,14 @@ module.exports = function (dep) {
         len2,
         avlTimePeriods,
         avlTimeMultiplier,
-        // minNumOfPlot = 5,
         maxNumOfPlot = config.composition.reactiveModel.model['max-plot-point'],
         multipliersArr,
         currentTimeLength,
         timePeriod,
         time,
-        expectedTime,
+        binSize,
         multiplier,
         minBinSize;
-        // maxBinSize;
 
       config.currentTimeLength = tsObject.globalReactiveModel.model['x-axis-visible-range-end'] -
         tsObject.globalReactiveModel.model['x-axis-visible-range-start'];
@@ -90,7 +87,6 @@ module.exports = function (dep) {
       currentTimeLength = config.currentTimeLength;
 
       config.minBinSize = minBinSize = currentTimeLength / maxNumOfPlot;
-      // config.maxBinSize = maxBinSize = currentTimeLength / minNumOfPlot;
 
       config.validTimePeriod = [];
       config.validTimePeriodMultiplier = [];
@@ -103,10 +99,9 @@ module.exports = function (dep) {
 
         for (j = 0, len2 = avlTimeMultiplier[i].length; j < len2; j++) {
           multiplier = avlTimeMultiplier[i][j];
-          expectedTime = multiplier * time;
+          binSize = multiplier * time;
 
-          // if ((expectedTime >= minBinSize) && (expectedTime <= maxBinSize)) {
-          if ((expectedTime >= minBinSize)) {
+          if ((binSize >= minBinSize)) {
             multipliersArr.push(avlTimeMultiplier[i][j]);
           }
         }
@@ -115,11 +110,12 @@ module.exports = function (dep) {
           config.validTimePeriod.push(timePeriod);
         }
       }
-      // console.log('Time Period: ', config.validTimePeriod);
-      // console.log('Number Of Multipliers: ', config.validTimePeriodMultiplier);
-      // console.log('Methods: ', config.avlAggMethods);
     }
 
+    /**
+     * Returns current Aggregation applied to timeseries
+     * @private
+     */
     getCurrentAggreation () {
       var self = this,
         config = self.config,
@@ -188,7 +184,6 @@ module.exports = function (dep) {
               param = requiredParams[i];
               self[saveTo][param] = arguments[i];
             }
-            // onInit(self[saveTo]);
           }
         ];
       require(requiredParams);
@@ -211,6 +206,10 @@ module.exports = function (dep) {
       return self;
     }
 
+    /**
+     * Create toolbar components
+     * @private
+     */
     createToolbar () {
       var self = this,
         group1,
@@ -256,6 +255,11 @@ module.exports = function (dep) {
           smartLabel: smartLabel,
           chartContainer: container
         },
+        /**
+         * Apply or Reset Aggregation applied through extension in timeseries
+         * @param {number} set - Flag to set or reset. '1' to set, '0' to reset
+         * @private
+         */
         apply = (set) => {
           var model = config.composition.reactiveModel,
             timePeriodVal = timePeriodSelectMenu.value(),
@@ -292,6 +296,10 @@ module.exports = function (dep) {
           }
         },
 
+        /**
+         * Sets valid time multiplier on time period change from extension toolbox
+         * @private
+         */
         timePeriodOnChange = () => {
           var timePeriodVal = timePeriodSelectMenu.value(),
             timePeriodMultiplierVal = timeMulSelectMenu.value(),
@@ -321,6 +329,10 @@ module.exports = function (dep) {
           }
         },
 
+        /**
+         * Sets state of applyButton(active/inactive) on change in value in toolbox
+         * @private
+         */
         onChange = (type) => {
           var currentAgg = self.getCurrentAggreation();
 
@@ -793,6 +805,11 @@ module.exports = function (dep) {
         aggVal,
         aggMethodSelectMenuOpt,
         avlAggMethods,
+
+        /**
+         * Compute and populate toolboxes with valid values on change in range of visual window
+         * @private
+         */
         rangeOnChange = () => {
           var aggregation = self.aggregation,
             currentAggregationObj,

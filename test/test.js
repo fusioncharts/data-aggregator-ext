@@ -1,133 +1,131 @@
-'use strict';
-import { describe, it } from 'mocha';
-import { expect } from 'chai';
+/* global document */
+/* global chai */
+/* global describe */
+/* global it */
+function getRandomDates (len) {
+  var day = 1, months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    year = 2015, month = 0, arr = [];
 
-var FusionCharts = require('../lib/fusioncharts');
+  for (var i = 0; i < len; i++) {
+    if (month === 11 && day === 31) {
+      year++;
+      month = 0;
+    }
+    if (day > 30 || (month === 1 && day === 28)) {
+      day = 1;
+      month++;
+    }
+    if (month > 11) {
+      month = 0;
+    }
+    var dateStr = day + '-' + months[month] + '-' + year;
+    arr.push(dateStr);
+    day++;
+  }
+  return arr;
+}
 
-var Aggregator = require('../src/fcts-ext-aggregator');
+function getRandomSeries (len) {
+  var arr = [];
 
-describe('Aggregator', function () {
-  var self = this;
-  FusionCharts.register('extension', ['date-range-chooser', function (id) {
-    var global = this;
-    var extAPI = global.extAPI;
+  for (var i = 0; i < len; i++) {
+    arr.push(Math.floor(Math.random() * 10));
+  }
+  return arr;
+}
 
-    self.dr = new Aggregator();
-    extAPI(self.dr);
-  }]);
-  var fc = new FusionCharts(); // eslint-disable-line no-unused-vars
-
-  describe('#aggregation', function () {
-    var extObj = new Aggregator();
-
-    var avlAggMethods = ['sum', 'average', 'custom'],
-      avlTimePeriods = [{
-        'min': '60000',
-        'multipliers': [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30]
-      },
+var tsChart,
+  data = {
+    'chart': {
+      'axes': [
         {
-          'hour': '3600000',
-          'multipliers': [1, 2, 3, 4, 6, 8, 12]
-        },
-        {
-          'day': '86400000',
-          'multipliers': [1, 2, 3, 5, 6, 10, 15]
-        },
-        {
-          'month': '2592000000',
-          'multipliers': [1, 2, 3, 4, 6]
-        },
-        {
-          'year': '31104000000',
-          'multipliers': [1, 2, 3, 4, 5, 6]
-        }];
+          'x': {
 
-    var chartObj = extObj.chart = {};
+          },
+          'y': {
 
-    chartObj.config = {};
-
-    var xAxis = extObj.x = {};
-
-    xAxis.getCurrentVisibleRange = function () {
-      return {
-        startDate: +new Date('1970-01-01'),
-        endDate: +new Date('1970-01-05')
-      };
-    };
-
-    chartObj.config.minNumOfPlot = 2;
-    chartObj.config.maxNumOfPlot = 200;
-
-    chartObj.getAvailableAggregationMethod = function () {
-      return avlAggMethods;
-    };
-
-    chartObj.getAvailableTimePeriod = function () {
-      return avlTimePeriods;
-    };
-
-    // extObj.getAvailablelAggreagation();
-    // extObj.getValidAggregation();
-
-    it('should be an object', function () {
-      expect(extObj.aggregation).to.be.an('object');
-    });
-
-    it('should prepare available aggregation', function () {
-      var flag = true;
-
-      extObj.getAvailablelAggreagation();
-
-      if (JSON.stringify(avlAggMethods) !== JSON.stringify(extObj.config.avlAggMethods)) {
-        flag = false;
-      }
-
-      if (JSON.stringify(avlTimePeriods) !== JSON.stringify(extObj.config.avlTimePeriods)) {
-        flag = false;
-      }
-
-      for (var i = 0; i < avlTimePeriods.length; i++) {
-        if (JSON.stringify(avlTimePeriods[i].multipliers) !== JSON.stringify(extObj.config.avlTimeMultiplier[i])) {
-          flag = false;
+          }
         }
-      }
+      ],
+      'datasets': [
+        {
+          'category': {
+            'dateformat': '%e-%b-%Y',
+            'data': getRandomDates(10000)
+          },
+          'dataset': [
+            {
+              'uid': 'ds-1',
+              'series': [
+                {
+                  'plot': {
+                    'type': 'line'
+                  },
+                  'name': 'Series 1',
+                  'data': getRandomSeries(10000)
+                },
+                {
+                  'plot': {
+                    'type': 'line'
+                  },
+                  'name': 'Series 1',
+                  'data': getRandomSeries(10000)
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      'canvas': [
+        {
+          'axes': function (store) {
+            return store.getAxesByIndex(0);
+          },
+          'dataset': function (store) {
+            return store.getDatasetsByIndex(0);
+          }
+        }
+      ],
+      'caption': [
+        {
+          'title': {
+            'text': 'Basic Elements'
+          },
+          'subtitle': {
+            'text': 'Sub-caption'
+          }
+        }
+      ]
+    }
+  };
 
-      expect(true).equal(flag);
-    });
+tsChart = new FusionCharts({
+  type: 'timeseries',
+  plottype: 'line',
+  renderAt: document.body,
+  width: '600',
+  height: '450',
+  dataFormat: 'json',
+  dataSource: data
+}).render();
 
-    it('should prepare valid aggregation', function () {
-      var flag = true,
-        validTimePeriod = ['min', 'hour', 'day'],
-        validTimePeriodMultiplier = [ [ 30 ], [ 1, 2, 3, 4, 6, 8, 12 ], [ 1, 2 ] ];
+var expect = chai.expect;
 
-      extObj.getValidAggregation();
-
-      if (JSON.stringify(validTimePeriod) !== JSON.stringify(extObj.config.validTimePeriod)) {
-        flag = false;
-      }
-
-      if (JSON.stringify(validTimePeriodMultiplier) !== JSON.stringify(extObj.config.validTimePeriodMultiplier)) {
-        flag = false;
-      }
-
-      if (JSON.stringify(avlTimePeriods) !== JSON.stringify(extObj.config.avlTimePeriods)) {
-        flag = false;
-      }
-
-      expect(true).equal(flag);
-    });
-
-    it('should set Aggregation', function () {
-      var flag;
-
-      flag = extObj.setAggregation({
-        timePeriod: 'hour',
-        timePeriodMultiplier: '2',
-        aggregationMethod: 'sum'
-      });
-
-      expect(true).equal(flag);
-    });
+describe('chart type caption', function () {
+  it('chart type should be timeseries or this test will fail', function () {
+    var type = tsChart.chartType(),
+      isMatch = (type.toLowerCase() === 'timeseries');
+    expect(isMatch).to.equal(true);
   });
-  self.dr.dispose();
+
+  // it('chart type should be timeseries or this test will fail', function (done) {
+  //   var type = tsChart.chartType(),
+  //     isMatch = (type.toLowerCase() === 'timeseries');
+
+  //   setTimeout(function () {
+  //     console.log(window.Aggregator);
+  //     expect(isMatch).to.equal(true);
+  //     done();
+  //   }, 100);
+  // });
 });

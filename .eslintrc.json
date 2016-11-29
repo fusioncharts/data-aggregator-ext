@@ -4,17 +4,18 @@
         "standard",
         "promise"
     ],
-    "rules": {
-      "semi": [
-        "error",
-        "always"
-      ],
-      "one-var": [
-        "off"
-      ]
-    },
     "globals": {
       "FusionCharts": true,
+      "GrowthAnalyser": true,
+      "MultiCharting": true,
+      "FCDataFilterExt": true,
+      "FilterVisual": true,
       "$": true
+    },
+    "rules": {
+      "one-var": ["off"],
+      "unused-vars": ["warn"],
+      "semi": ["error", "always"],
+      "no-unused-vars": ["warn"]
     }
 }

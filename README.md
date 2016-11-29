@@ -5,7 +5,7 @@ This extension will let the user to aggregate his raw data based on various stan
 Browser Inclusion
 
 `<script type="text/javascript" src="js/fusioncharts.min.js"></script>`
-`<script type="text/javascript" src="js/fcts-ext-dataaggregator-es6.min.js"></script>`
+`<script type="text/javascript" src="js/fcts-ext-dataaggregator-es6.js"></script>`
 
 Node Inclusion
 

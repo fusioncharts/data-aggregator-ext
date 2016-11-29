@@ -3,7 +3,7 @@
 
 export default {
   output: {
-    filename: 'fcts-ext-dataaggregator-es5.min.js'
+    filename: 'fcts-ext-dataaggregator-es5.js'
   },
   module: {
     loaders: [

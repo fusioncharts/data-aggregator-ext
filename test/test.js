@@ -115,6 +115,8 @@ describe('chart type caption', function () {
   it('chart type should be timeseries or this test will fail', function () {
     var type = tsChart.chartType(),
       isMatch = (type.toLowerCase() === 'timeseries');
+
+    console.log(window.Aggregator);
     expect(isMatch).to.equal(true);
   });
 

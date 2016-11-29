@@ -2,7 +2,7 @@
 
 export default {
   output: {
-    filename: 'fcts-ext-dataaggregator-es6.min.js'
+    filename: 'fcts-ext-dataaggregator-es6.js'
   },
   resolve: {
     extensions: ['', '.js']

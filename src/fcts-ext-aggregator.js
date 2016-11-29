@@ -213,7 +213,9 @@ module.exports = function (dep) {
 
     createToolbar () {
       var self = this,
-        group,
+        group1,
+        group2,
+        group3,
         toolbar,
         timeMulSelectMenu,
         timePeriodSelectMenu,
@@ -331,7 +333,10 @@ module.exports = function (dep) {
           }
         };
 
-      group = new ComponentGroup(dependencies);
+      group1 = new ComponentGroup(dependencies);
+      group2 = new ComponentGroup(dependencies);
+      group3 = new ComponentGroup(dependencies);
+
       toolbar = new HorizontalToolbar(dependencies);
 
       config.usrConfig = {
@@ -489,7 +494,15 @@ module.exports = function (dep) {
         }
       };
 
-      group.setConfig({
+      group1.setConfig({
+        fill: '#fff',
+        borderThickness: 0
+      });
+      group2.setConfig({
+        fill: '#fff',
+        borderThickness: 0
+      });
+      group3.setConfig({
         fill: '#fff',
         borderThickness: 0
       });
@@ -640,12 +653,12 @@ module.exports = function (dep) {
         });
       resetButton.setStateConfig(resetButtonDisableConfig);
 
-      group.addSymbol(label);
-      group.addSymbol(timeMulSelectMenu);
-      group.addSymbol(timePeriodSelectMenu);
-      group.addSymbol(aggMethodSelectMenu);
-      group.addSymbol(applyButton);
-      group.addSymbol(resetButton);
+      group1.addSymbol(label);
+      group2.addSymbol(timeMulSelectMenu);
+      group2.addSymbol(timePeriodSelectMenu);
+      group2.addSymbol(aggMethodSelectMenu);
+      group3.addSymbol(applyButton);
+      group3.addSymbol(resetButton);
 
       SymbolStore.register('textBoxIcon', function (x, y, rad, w, h, padX, padY) {
         var x1 = x - w / 2 + padX / 2,
@@ -675,7 +688,9 @@ module.exports = function (dep) {
         }
       });
 
-      toolbar.addComponent(group);
+      toolbar.addComponent(group1);
+      toolbar.addComponent(group2);
+      toolbar.addComponent(group3);
 
       return toolbar;
     }
@@ -688,7 +703,7 @@ module.exports = function (dep) {
         ln;
 
       for (i = 0, ln = this.toolbars.length; i < ln; i++) {
-        logicalSpace = this.toolbars[i].getLogicalSpace();
+        logicalSpace = this.toolbars[i].getLogicalSpace(availableWidth, availableHeight);
         width = Math.max(logicalSpace.width, width);
         height += logicalSpace.height;
         this.toolbars[i].width = logicalSpace.width;
@@ -696,8 +711,8 @@ module.exports = function (dep) {
       }
       height += this.padding;
       return {
-        width: width > availableWidth ? 0 : width,
-        height: height > availableHeight ? 0 : height
+        width: width,
+        height: height
       };
     }
 

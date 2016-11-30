@@ -38,12 +38,8 @@
     "gulp-eslint": "^3.0.1",
     "gulp-istanbul": "^1.1.1",
     "gulp-mocha": "^3.0.1",
-    "gulp-prettydiff": "^1.0.1",
-    "gulp-sourcemaps": "^2.1.1",
-    "gulp-uglify": "^2.0.0",
     "jsdoc": "^3.4.2",
     "mocha": "^3.1.2",
-    "through2": "^2.0.1",
     "vinyl-named": "^1.1.0",
     "webpack": "^1.13.2",
     "webpack-stream": "^3.2.0",
@@ -51,8 +47,5 @@
     "jsdom": "^9.8.3",
     "mocha-phantomjs": "^4.1.0",
     "phantomjs": "^2.1.7"
-  },
-  "dependencies": {
-    "fusioncharts": "^3.11.3"
   }
 }

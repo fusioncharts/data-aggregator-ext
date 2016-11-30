@@ -16,9 +16,5 @@ export default {
   },
   resolve: {
     extensions: ['', '.js']
-  },
-  devtool: 'inline-source-map'
-  // plugins: [
-  //   new webpack.optimize.UglifyJsPlugin({ minimize: true })
-  // ]
+  }
 };

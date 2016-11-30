@@ -212,9 +212,9 @@ module.exports = function (dep) {
      */
     createToolbar () {
       var self = this,
-        group1,
-        group2,
-        group3,
+        labelGroup,
+        selectMenuGroup,
+        buttonGroup,
         toolbar,
         timeMulSelectMenu,
         timePeriodSelectMenu,
@@ -345,9 +345,9 @@ module.exports = function (dep) {
           }
         };
 
-      group1 = new ComponentGroup(dependencies);
-      group2 = new ComponentGroup(dependencies);
-      group3 = new ComponentGroup(dependencies);
+      labelGroup = new ComponentGroup(dependencies);
+      selectMenuGroup = new ComponentGroup(dependencies);
+      buttonGroup = new ComponentGroup(dependencies);
 
       toolbar = new HorizontalToolbar(dependencies);
 
@@ -358,8 +358,9 @@ module.exports = function (dep) {
         orientation: 'horizontal',
         styles: {
           label: {
-            'font-size': '13',
-            'fill': '#696969'
+            'font-size': 13,
+            'fill': '#696969',
+            'height': 22
           },
           timeMultiplierInputField: {
             active: {
@@ -516,15 +517,15 @@ module.exports = function (dep) {
         }
       };
 
-      group1.setConfig({
+      labelGroup.setConfig({
         fill: '#fff',
         borderThickness: 0
       });
-      group2.setConfig({
+      selectMenuGroup.setConfig({
         fill: '#fff',
         borderThickness: 0
       });
-      group3.setConfig({
+      buttonGroup.setConfig({
         fill: '#fff',
         borderThickness: 0
       });
@@ -616,6 +617,9 @@ module.exports = function (dep) {
       };
 
       label = new toolbox.Label('Aggregate Data:', dependencies, {
+        container: {
+          height: style.label.height
+        },
         text: {
           style: style.label
         }
@@ -664,12 +668,12 @@ module.exports = function (dep) {
         });
       resetButton.setStateConfig(resetButtonDisableConfig);
 
-      group1.addSymbol(label);
-      group2.addSymbol(timeMulSelectMenu);
-      group2.addSymbol(timePeriodSelectMenu);
-      group2.addSymbol(aggMethodSelectMenu);
-      group3.addSymbol(applyButton);
-      group3.addSymbol(resetButton);
+      labelGroup.addSymbol(label);
+      selectMenuGroup.addSymbol(timeMulSelectMenu);
+      selectMenuGroup.addSymbol(timePeriodSelectMenu);
+      selectMenuGroup.addSymbol(aggMethodSelectMenu);
+      buttonGroup.addSymbol(applyButton);
+      buttonGroup.addSymbol(resetButton);
 
       SymbolStore.register('textBoxIcon', function (x, y, rad, w, h, padX, padY) {
         var x1 = x - w / 2 + padX / 2,
@@ -699,9 +703,9 @@ module.exports = function (dep) {
         }
       });
 
-      toolbar.addComponent(group1);
-      toolbar.addComponent(group2);
-      toolbar.addComponent(group3);
+      toolbar.addComponent(labelGroup);
+      toolbar.addComponent(selectMenuGroup);
+      toolbar.addComponent(buttonGroup);
 
       return toolbar;
     }

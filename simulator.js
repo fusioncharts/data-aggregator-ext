@@ -1,7 +1,7 @@
 var page = require("webpage").create(),
     args = require('system').args,
-    fc = "./node_modules/fusioncharts/fusioncharts.js",
-    fcTs = "./node_modules/fusioncharts/fusioncharts.timeseries.js",
+    fc = "./lib/fusioncharts.js",
+    fcTs = "./lib/fusioncharts.timeseries.js",
     ext = "./dist/fcts-ext-dataaggregator-es5.js",
     //pass in the name of the file that contains your tests
     testFile = "./test/test.js",

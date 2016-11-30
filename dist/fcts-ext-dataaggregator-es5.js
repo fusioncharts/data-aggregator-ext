@@ -883,11 +883,11 @@
 	            },
 	            position: [{
 	              type: function type(obj) {
-	                return obj.top;
+	                return obj.bottom;
 	              },
 	              alignment: [{
 	                type: function type(obj) {
-	                  return obj.left;
+	                  return obj.right;
 	                },
 	                dimensions: [function () {
 	                  var parent = this.getParentComponentGroup();

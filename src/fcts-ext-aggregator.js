@@ -758,11 +758,11 @@ module.exports = function (dep) {
           },
           position: [{
             type: function (obj) {
-              return obj.top;
+              return obj.bottom;
             },
             alignment: [{
               type: function (obj) {
-                return obj.left;
+                return obj.right;
               },
               dimensions: [function () {
                 var parent = this.getParentComponentGroup();

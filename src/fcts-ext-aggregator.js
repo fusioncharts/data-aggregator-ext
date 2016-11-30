@@ -357,13 +357,17 @@ module.exports = function (dep) {
         alignment: 'left',
         orientation: 'horizontal',
         styles: {
+          label: {
+            'font-size': '13',
+            'fill': '#696969'
+          },
           timeMultiplierInputField: {
             active: {
               'fill': '#fff',
               'labelFill': '#696969',
               'stroke': '#c8cecd',
               'strokeWidth': 1,
-              'hoverStroke': '#696969',
+              'hoverStroke': '#1e1f1f',
               'hoverStrokeWidth': 1,
               'radius': 1,
               'width': 45,
@@ -372,7 +376,7 @@ module.exports = function (dep) {
             inactive: {
               'fill': '#fff',
               'stroke-width': 1,
-              'stroke': 'rgb(192, 192, 192)',
+              'stroke': '#ced5d4',
               'labelFill': '#000'
             }
           },
@@ -382,7 +386,7 @@ module.exports = function (dep) {
               'labelFill': '#696969',
               'stroke': '#c8cecd',
               'strokeWidth': 1,
-              'hoverStroke': '#696969',
+              'hoverStroke': '#1e1f1f',
               'hoverStrokeWidth': 1,
               'radius': 1,
               'width': 75,
@@ -391,7 +395,7 @@ module.exports = function (dep) {
             inactive: {
               'fill': '#fff',
               'stroke-width': 1,
-              'stroke': 'rgb(192, 192, 192)',
+              'stroke': '#ced5d4',
               'labelFill': '#000'
             }
           },
@@ -401,7 +405,7 @@ module.exports = function (dep) {
               'labelFill': '#696969',
               'stroke': '#c8cecd',
               'strokeWidth': 1,
-              'hoverStroke': '#696969',
+              'hoverStroke': '#1e1f1f',
               'hoverStrokeWidth': 1,
               'radius': 1,
               'width': 100,
@@ -410,7 +414,7 @@ module.exports = function (dep) {
             inactive: {
               'fill': '#fff',
               'stroke-width': 1,
-              'stroke': 'rgb(192, 192, 192)',
+              'stroke': '#ced5d4',
               'labelFill': '#000'
             }
           },
@@ -421,6 +425,8 @@ module.exports = function (dep) {
             },
             normal: {
               'fill': '#fff',
+              'stroke': '#898b8b',
+              'radius': 1,
               'labelFill': '#000',
               'hoverFill': '#e6e8e8',
               'hoverLabelFill': '#000'
@@ -430,19 +436,19 @@ module.exports = function (dep) {
             active: {
               'fill': '#555',
               'labelFill': '#f3f3f3',
-              'stroke': '#c8cecd',
+              'stroke': '#ced5d4',
               'strokeWidth': 1,
               'hoverFill': '#555',
               'hoverStrokeWidth': 1,
               'hoverStroke': '',
               'radius': 1,
-              'width': 30,
-              'height': 20
+              'width': 54,
+              'height': 22
             },
             inactive: {
               'fill': '#bebebe',
               'stroke-width': 1,
-              'stroke': 'rgb(192, 192, 192)',
+              'stroke': '#ced5d4',
               'labelFill': '#f3f3f3'
             }
           },
@@ -450,19 +456,19 @@ module.exports = function (dep) {
             active: {
               'fill': '#898b8b',
               'labelFill': '#f3f3f3',
-              'stroke': '#c8cecd',
+              'stroke': '#ced5d4',
               'strokeWidth': 1,
               'hoverFill': '#898b8b',
               'hoverStrokeWidth': 1,
               'hoverStroke': '',
               'radius': 1,
-              'width': 30,
-              'height': 20
+              'width': 54,
+              'height': 22
             },
             inactive: {
               'fill': '#bebebe',
               'stroke-width': 1,
-              'stroke': 'rgb(192, 192, 192)',
+              'stroke': '#ced5d4',
               'labelFill': '#f3f3f3'
             }
           },
@@ -480,6 +486,7 @@ module.exports = function (dep) {
       style = config.usrConfig.styles || {};
 
       style = {
+        label: style.label || {},
         timeMultiplierInputField: {
           active: (style.timeMultiplierInputField && style.timeMultiplierInputField.active) || {},
           inactive: (style.timeMultiplierInputField && style.timeMultiplierInputField.inactive) || {}
@@ -583,7 +590,9 @@ module.exports = function (dep) {
         normal: {
           container: {
             style: {
-              fill: style.dropDown.normal.fill
+              fill: style.dropDown.normal.fill,
+              stroke: style.dropDown.normal.stroke,
+              radius: style.dropDown.normal.radius
             }
           },
           text: {
@@ -608,10 +617,7 @@ module.exports = function (dep) {
 
       label = new toolbox.Label('Aggregate Data:', dependencies, {
         text: {
-          style: {
-            'font-size': '14',
-            'fill': '#696969'
-          }
+          style: style.label
         }
       });
 

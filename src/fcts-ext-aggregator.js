@@ -426,7 +426,7 @@ module.exports = function (dep) {
             normal: {
               'fill': '#fff',
               'stroke': '#898b8b',
-              'radius': 1,
+              'radius': 2,
               'labelFill': '#000',
               'hoverFill': '#e6e8e8',
               'hoverLabelFill': '#000'

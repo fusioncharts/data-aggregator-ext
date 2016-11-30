@@ -728,7 +728,7 @@ module.exports = function (dep) {
       self.padding = 5;
       tsObject.spaceManagerInstance.add([{
         name: function () {
-          return 'DataAggregator';
+          return 'data-aggregator';
         },
         ref: function (obj) {
           return obj['0'];
@@ -898,7 +898,7 @@ module.exports = function (dep) {
       if (width && height) {
         for (i = 0, ln = toolbars.length; i < ln; i++) {
           toolbar = toolbars[i];
-          toolbar.draw(x, y);
+          toolbar.draw(x, y, group);
         }
       }
       rangeOnChange();

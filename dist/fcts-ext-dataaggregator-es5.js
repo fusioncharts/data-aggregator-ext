@@ -480,7 +480,7 @@
 	        };
 
 	        labelGroup = new ComponentGroup(dependencies, {
-	          hPadding: 0
+	          hPadding: 4
 	        });
 	        selectMenuGroup = new ComponentGroup(dependencies, {
 	          hPadding: 0
@@ -499,6 +499,8 @@
 	          styles: {
 	            label: {
 	              'font-size': 13,
+	              'font-family': 'sans-serif',
+	              'font-weight': 'bold',
 	              'fill': '#696969',
 	              'height': 22
 	            },
@@ -615,9 +617,9 @@
 	            },
 	            base: {
 	              font: {
-	                'fontSize': 11
+	                'fontSize': 11,
 	                // 'fontWeight': 'bold',
-	                // 'fontFamily': 'sans-serif',
+	                'fontFamily': 'sans-serif'
 	                // 'fontStyle': 'italic'
 	              }
 	            }
@@ -786,7 +788,7 @@
 	        toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [], Object.assign(style.aggregationMethodInputField.active, {
 	          btnTextStyle: style.base.font,
 	          margin: {
-	            right: 10
+	            right: 12
 	          },
 	          dropDownMenu: dropDownMenuStyle
 	        }));

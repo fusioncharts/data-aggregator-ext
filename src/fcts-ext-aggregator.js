@@ -350,7 +350,7 @@ module.exports = function (dep) {
         };
 
       labelGroup = new ComponentGroup(dependencies, {
-        hPadding: 0
+        hPadding: 4
       });
       selectMenuGroup = new ComponentGroup(dependencies, {
         hPadding: 0
@@ -369,6 +369,8 @@ module.exports = function (dep) {
         styles: {
           label: {
             'font-size': 13,
+            'font-family': 'sans-serif',
+            'font-weight': 'bold',
             'fill': '#696969',
             'height': 22
           },
@@ -485,9 +487,9 @@ module.exports = function (dep) {
           },
           base: {
             font: {
-              'fontSize': 11
+              'fontSize': 11,
               // 'fontWeight': 'bold',
-              // 'fontFamily': 'sans-serif',
+              'fontFamily': 'sans-serif'
               // 'fontStyle': 'italic'
             }
           }
@@ -659,7 +661,7 @@ module.exports = function (dep) {
       Object.assign(style.aggregationMethodInputField.active, {
         btnTextStyle: style.base.font,
         margin: {
-          right: 10
+          right: 12
         },
         dropDownMenu: dropDownMenuStyle
       }));

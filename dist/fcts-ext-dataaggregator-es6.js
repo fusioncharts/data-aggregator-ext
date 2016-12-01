@@ -426,9 +426,15 @@
 	          }
 	        };
 
-	      labelGroup = new ComponentGroup(dependencies);
-	      selectMenuGroup = new ComponentGroup(dependencies);
-	      buttonGroup = new ComponentGroup(dependencies);
+	      labelGroup = new ComponentGroup(dependencies, {
+	        hPadding: 0
+	      });
+	      selectMenuGroup = new ComponentGroup(dependencies, {
+	        hPadding: 0
+	      });
+	      buttonGroup = new ComponentGroup(dependencies, {
+	        hPadding: 0
+	      });
 
 	      toolbar = new HorizontalToolbar(dependencies);
 
@@ -511,7 +517,7 @@
 	              'radius': 2,
 	              'labelFill': '#000',
 	              'hoverFill': '#e6e8e8',
-	              'hoverLabelFill': '#000'
+	              'hoverLabelFill': '#696969'
 	            }
 	          },
 	          applyButton: {
@@ -709,27 +715,39 @@
 	      toolboxCompConfig.timePeriodSelectMenu = timePeriodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
 	      Object.assign(style.timePeriodInputField.active, {
 	        btnTextStyle: style.base.font,
-	        dropDownMenu: dropDownMenuStyle
+	        dropDownMenu: dropDownMenuStyle,
+	        margin: {
+	          right: 8
+	        }
 	      }));
 	      timePeriodSelectMenu.setStateConfig(timePeriodMenuDisableConfig);
 
 	      toolboxCompConfig.timeMulSelectMenu = timeMulSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
 	      Object.assign(style.timeMultiplierInputField.active, {
 	        btnTextStyle: style.base.font,
-	        dropDownMenu: dropDownMenuStyle
+	        dropDownMenu: dropDownMenuStyle,
+	        margin: {
+	          right: 3
+	        }
 	      }));
 	      timeMulSelectMenu.setStateConfig(timeMultiplierMenuDisableConfig);
 
 	      toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
 	      Object.assign(style.aggregationMethodInputField.active, {
 	        btnTextStyle: style.base.font,
+	        margin: {
+	          right: 10
+	        },
 	        dropDownMenu: dropDownMenuStyle
 	      }));
 	      aggMethodSelectMenu.setStateConfig(aggMethodMenuDisableonfig);
 
 	      toolboxCompConfig.applyButton = applyButton = new toolbox.Symbol('APPLY', true, dependencies,
 	        Object.assign(style.applyButton.active, {
-	          btnTextStyle: style.base.font
+	          btnTextStyle: style.base.font,
+	          margin: {
+	            right: 3
+	          }
 	        }))
 	        .attachEventHandlers({
 	          click: function () {
@@ -740,7 +758,10 @@
 
 	      toolboxCompConfig.resetButton = resetButton = new toolbox.Symbol('RESET', true, dependencies,
 	        Object.assign(style.resetButton.active, {
-	          btnTextStyle: style.base.font
+	          btnTextStyle: style.base.font,
+	          margin: {
+	            right: 3
+	          }
 	        }))
 	        .attachEventHandlers({
 	          click: function () {

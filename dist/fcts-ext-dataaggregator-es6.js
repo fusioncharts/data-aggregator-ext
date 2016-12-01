@@ -247,6 +247,7 @@
 	    init (require) {
 	      var self = this,
 	        config = self.config,
+	        tsObject,
 	        toolboxComponent = config.toolboxComponent = {},
 	        api,
 	        store,
@@ -259,6 +260,7 @@
 	          'spaceManagerInstance',
 	          'chartInstance',
 	          'smartLabel',
+	          'extData',
 	          function acquire () {
 	            let i = 0,
 	              ii = requiredParams.length - 1,
@@ -273,7 +275,10 @@
 	        ];
 	      require(requiredParams);
 
-	      api = self.tsObject.chartInstance.apiInstance;
+	      tsObject = self.tsObject;
+	      config.usrConfig = tsObject.extData;
+
+	      api = tsObject.chartInstance.apiInstance;
 	      store = api.getComponentStore();
 	      config.composition = composition = store.getCanvasByIndex(0).composition;
 	      config.dataAgg = composition.impl.getDataAggregator();
@@ -442,140 +447,140 @@
 
 	      toolbar = new HorizontalToolbar(dependencies);
 
-	      config.usrConfig = {
-	        enabled: true,
-	        posWrtCanvas: 'top',
-	        alignment: 'left',
-	        orientation: 'horizontal',
-	        styles: {
-	          label: {
-	            'font-size': 13,
-	            'font-family': 'sans-serif',
-	            'font-weight': 'bold',
-	            'fill': '#696969',
-	            'height': 22
-	          },
-	          timeMultiplierInputField: {
-	            active: {
-	              'fill': '#fff',
-	              'labelFill': '#696969',
-	              'stroke': '#c8cecd',
-	              'strokeWidth': 1,
-	              'hoverStroke': '#1e1f1f',
-	              'hoverStrokeWidth': 1,
-	              'radius': 1,
-	              'width': 50,
-	              'height': 22
-	            },
-	            inactive: {
-	              'fill': '#fff',
-	              'stroke-width': 1,
-	              'stroke': '#ced5d4',
-	              'labelFill': '#000'
-	            }
-	          },
-	          timePeriodInputField: {
-	            active: {
-	              'fill': '#fff',
-	              'labelFill': '#696969',
-	              'stroke': '#c8cecd',
-	              'strokeWidth': 1,
-	              'hoverStroke': '#1e1f1f',
-	              'hoverStrokeWidth': 1,
-	              'radius': 1,
-	              'width': 90,
-	              'height': 22
-	            },
-	            inactive: {
-	              'fill': '#fff',
-	              'stroke-width': 1,
-	              'stroke': '#ced5d4',
-	              'labelFill': '#000'
-	            }
-	          },
-	          aggregationMethodInputField: {
-	            active: {
-	              'fill': '#fff',
-	              'labelFill': '#696969',
-	              'stroke': '#c8cecd',
-	              'strokeWidth': 1,
-	              'hoverStroke': '#1e1f1f',
-	              'hoverStrokeWidth': 1,
-	              'radius': 1,
-	              'width': 100,
-	              'height': 22
-	            },
-	            inactive: {
-	              'fill': '#fff',
-	              'stroke-width': 1,
-	              'stroke': '#ced5d4',
-	              'labelFill': '#000'
-	            }
-	          },
-	          dropDown: {
-	            active: {
-	              'fill': '#898b8b',
-	              'labelFill': '#fff'
-	            },
-	            normal: {
-	              'fill': '#fff',
-	              'stroke': '#898b8b',
-	              'radius': 2,
-	              'labelFill': '#000',
-	              'hoverFill': '#e6e8e8',
-	              'hoverLabelFill': '#696969'
-	            }
-	          },
-	          applyButton: {
-	            active: {
-	              'fill': '#555',
-	              'labelFill': '#f3f3f3',
-	              'stroke': '#ced5d4',
-	              'strokeWidth': 1,
-	              'hoverFill': '#555',
-	              'hoverStrokeWidth': 1,
-	              'hoverStroke': '',
-	              'radius': 1,
-	              'width': 54,
-	              'height': 22
-	            },
-	            inactive: {
-	              'fill': '#bebebe',
-	              'stroke-width': 1,
-	              'stroke': '#ced5d4',
-	              'labelFill': '#f3f3f3'
-	            }
-	          },
-	          resetButton: {
-	            active: {
-	              'fill': '#898b8b',
-	              'labelFill': '#f3f3f3',
-	              'stroke': '#ced5d4',
-	              'strokeWidth': 1,
-	              'hoverFill': '#898b8b',
-	              'hoverStrokeWidth': 1,
-	              'hoverStroke': '',
-	              'radius': 1,
-	              'width': 54,
-	              'height': 22
-	            },
-	            inactive: {
-	              'fill': '#bebebe',
-	              'stroke-width': 1,
-	              'stroke': '#ced5d4',
-	              'labelFill': '#f3f3f3'
-	            }
-	          },
-	          base: {
-	            font: {
-	              'fontSize': 11,
-	              // 'fontWeight': 'bold',
-	              'fontFamily': 'sans-serif'
-	              // 'fontStyle': 'italic'
-	            }
-	          }
-	        }
-	      };
+	      // config.usrConfig = {
+	      //   enabled: true,
+	      //   posWrtCanvas: 'top',
+	      //   alignment: 'left',
+	      //   orientation: 'horizontal',
+	      //   styles: {
+	      //     label: {
+	      //       'font-size': 13,
+	      //       'font-family': '"Lucida Grande", "sans-serif"',
+	      //       'font-weight': 'bold',
+	      //       'fill': '#696969',
+	      //       'height': 22
+	      //     },
+	      //     timeMultiplierInputField: {
+	      //       active: {
+	      //         'fill': '#fff',
+	      //         'labelFill': '#696969',
+	      //         'stroke': '#c8cecd',
+	      //         'strokeWidth': 1,
+	      //         'hoverStroke': '#1e1f1f',
+	      //         'hoverStrokeWidth': 1,
+	      //         'radius': 1,
+	      //         'width': 50,
+	      //         'height': 22
+	      //       },
+	      //       inactive: {
+	      //         'fill': '#fff',
+	      //         'stroke-width': 1,
+	      //         'stroke': '#ced5d4',
+	      //         'labelFill': '#000'
+	      //       }
+	      //     },
+	      //     timePeriodInputField: {
+	      //       active: {
+	      //         'fill': '#fff',
+	      //         'labelFill': '#696969',
+	      //         'stroke': '#c8cecd',
+	      //         'strokeWidth': 1,
+	      //         'hoverStroke': '#1e1f1f',
+	      //         'hoverStrokeWidth': 1,
+	      //         'radius': 1,
+	      //         'width': 90,
+	      //         'height': 22
+	      //       },
+	      //       inactive: {
+	      //         'fill': '#fff',
+	      //         'stroke-width': 1,
+	      //         'stroke': '#ced5d4',
+	      //         'labelFill': '#000'
+	      //       }
+	      //     },
+	      //     aggregationMethodInputField: {
+	      //       active: {
+	      //         'fill': '#fff',
+	      //         'labelFill': '#696969',
+	      //         'stroke': '#c8cecd',
+	      //         'strokeWidth': 1,
+	      //         'hoverStroke': '#1e1f1f',
+	      //         'hoverStrokeWidth': 1,
+	      //         'radius': 1,
+	      //         'width': 100,
+	      //         'height': 22
+	      //       },
+	      //       inactive: {
+	      //         'fill': '#fff',
+	      //         'stroke-width': 1,
+	      //         'stroke': '#ced5d4',
+	      //         'labelFill': '#000'
+	      //       }
+	      //     },
+	      //     dropDown: {
+	      //       active: {
+	      //         'fill': '#898b8b',
+	      //         'labelFill': '#fff'
+	      //       },
+	      //       normal: {
+	      //         'fill': '#fff',
+	      //         'stroke': '#898b8b',
+	      //         'radius': 2,
+	      //         'labelFill': '#000',
+	      //         'hoverFill': '#e6e8e8',
+	      //         'hoverLabelFill': '#696969'
+	      //       }
+	      //     },
+	      //     applyButton: {
+	      //       active: {
+	      //         'fill': '#555',
+	      //         'labelFill': '#f3f3f3',
+	      //         'stroke': '#ced5d4',
+	      //         'strokeWidth': 1,
+	      //         'hoverFill': '#555',
+	      //         'hoverStrokeWidth': 1,
+	      //         'hoverStroke': '',
+	      //         'radius': 1,
+	      //         'width': 54,
+	      //         'height': 22
+	      //       },
+	      //       inactive: {
+	      //         'fill': '#bebebe',
+	      //         'stroke-width': 1,
+	      //         'stroke': '#ced5d4',
+	      //         'labelFill': '#f3f3f3'
+	      //       }
+	      //     },
+	      //     resetButton: {
+	      //       active: {
+	      //         'fill': '#898b8b',
+	      //         'labelFill': '#f3f3f3',
+	      //         'stroke': '#ced5d4',
+	      //         'strokeWidth': 1,
+	      //         'hoverFill': '#898b8b',
+	      //         'hoverStrokeWidth': 1,
+	      //         'hoverStroke': '',
+	      //         'radius': 1,
+	      //         'width': 54,
+	      //         'height': 22
+	      //       },
+	      //       inactive: {
+	      //         'fill': '#bebebe',
+	      //         'stroke-width': 1,
+	      //         'stroke': '#ced5d4',
+	      //         'labelFill': '#f3f3f3'
+	      //       }
+	      //     },
+	      //     base: {
+	      //       font: {
+	      //         'fontSize': 11,
+	      //         // 'fontWeight': 'bold',
+	      //         'fontFamily': '"Lucida Grande", "sans-serif"'
+	      //         // 'fontStyle': 'italic'
+	      //       }
+	      //     }
+	      //   }
+	      // };
 
 	      style = config.usrConfig.styles || {};
 
@@ -742,7 +747,7 @@
 	      Object.assign(style.aggregationMethodInputField.active, {
 	        btnTextStyle: style.base.font,
 	        margin: {
-	          right: 12
+	          right: 11
 	        },
 	        dropDownMenu: dropDownMenuStyle
 	      }));
@@ -841,7 +846,8 @@
 
 	    placeInCanvas (containerInstance) {
 	      var self = this,
-	        tsObject = self.tsObject;
+	        tsObject = self.tsObject,
+	        usrConfig = self.config.usrConfig;
 
 	      self.padding = 5;
 	      tsObject.spaceManagerInstance.add([{
@@ -862,15 +868,15 @@
 	        },
 	        orientation: [{
 	          type: function (obj) {
-	            return obj.horizontal;
+	            return obj[usrConfig.orientation];
 	          },
 	          position: [{
 	            type: function (obj) {
-	              return obj.bottom;
+	              return obj[usrConfig.posWrtCanvas];
 	            },
 	            alignment: [{
 	              type: function (obj) {
-	                return obj.right;
+	                return obj[usrConfig.alignment];
 	              },
 	              dimensions: [function () {
 	                var parent = this.getParentComponentGroup();

@@ -747,7 +747,7 @@
 	      Object.assign(style.aggregationMethodInputField.active, {
 	        btnTextStyle: style.base.font,
 	        margin: {
-	          right: 12
+	          right: 11
 	        },
 	        dropDownMenu: dropDownMenuStyle
 	      }));

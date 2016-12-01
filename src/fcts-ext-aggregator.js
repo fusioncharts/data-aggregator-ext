@@ -381,7 +381,7 @@ module.exports = function (dep) {
               'hoverStroke': '#1e1f1f',
               'hoverStrokeWidth': 1,
               'radius': 1,
-              'width': 45,
+              'width': 50,
               'height': 22
             },
             inactive: {
@@ -400,7 +400,7 @@ module.exports = function (dep) {
               'hoverStroke': '#1e1f1f',
               'hoverStrokeWidth': 1,
               'radius': 1,
-              'width': 75,
+              'width': 90,
               'height': 22
             },
             inactive: {

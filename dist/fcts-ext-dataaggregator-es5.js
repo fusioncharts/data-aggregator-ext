@@ -96,6 +96,10 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+	String.prototype.capitalize = function () {
+	  return this.charAt(0).toUpperCase() + this.slice(1);
+	};
+
 	module.exports = function (dep) {
 	  /**
 	   * Class representing the Data Aggregator.
@@ -1017,7 +1021,7 @@
 	              timePeriodVal = _step3.value;
 
 	              timePeriodSelectMenuOpt.push({
-	                name: timePeriodVal,
+	                name: timePeriodVal.capitalize(),
 	                value: timePeriodVal
 	              });
 	            }
@@ -1076,7 +1080,7 @@
 
 	          for (aggVal in avlAggMethods) {
 	            aggMethodSelectMenuOpt.push({
-	              name: avlAggMethods[aggVal].formalName,
+	              name: avlAggMethods[aggVal].formalName.capitalize(),
 	              value: avlAggMethods[aggVal].nickName
 	            });
 	          }

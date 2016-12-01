@@ -16,6 +16,7 @@
       "one-var": ["off"],
       "unused-vars": ["warn"],
       "semi": ["error", "always"],
-      "no-unused-vars": ["warn"]
+      "no-unused-vars": ["warn"],
+      "no-extend-native": ["warn"]
     }
 }

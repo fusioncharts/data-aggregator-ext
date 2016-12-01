@@ -1,5 +1,9 @@
 'use strict';
 
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+};
+
 module.exports = function (dep) {
   /**
    * Class representing the Data Aggregator.
@@ -886,7 +890,7 @@ module.exports = function (dep) {
 
           for (timePeriodVal of validTimePeriod) {
             timePeriodSelectMenuOpt.push({
-              name: timePeriodVal,
+              name: timePeriodVal.capitalize(),
               value: timePeriodVal
             });
           }
@@ -910,7 +914,7 @@ module.exports = function (dep) {
 
           for (aggVal in avlAggMethods) {
             aggMethodSelectMenuOpt.push({
-              name: avlAggMethods[aggVal].formalName,
+              name: avlAggMethods[aggVal].formalName.capitalize(),
               value: avlAggMethods[aggVal].nickName
             });
           }

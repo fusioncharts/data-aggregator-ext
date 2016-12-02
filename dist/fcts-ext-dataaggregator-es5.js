@@ -509,8 +509,8 @@
 	          label: {
 	            'font-size': 13,
 	            'font-family': '"Lucida Grande", "sans-serif"',
-	            'font-weight': 'bold',
-	            'fill': '#696969',
+	            'font-weight': 'normal',
+	            'fill': '#4b4b4b',
 	            'height': 22
 	          },
 	          timeMultiplierInputField: {

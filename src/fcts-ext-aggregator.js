@@ -390,9 +390,11 @@ module.exports = function (dep) {
             'labelFill': '#696969',
             'stroke': '#c8cecd',
             'strokeWidth': 1,
-            'hoverStroke': '#1e1f1f',
-            'hoverStrokeWidth': 1,
             'radius': 1,
+            'shadow': {
+              'fill': '#000',
+              'opacity': 0.35
+            },
             'width': 50,
             'height': 22
           },
@@ -409,9 +411,11 @@ module.exports = function (dep) {
             'labelFill': '#696969',
             'stroke': '#c8cecd',
             'strokeWidth': 1,
-            'hoverStroke': '#1e1f1f',
-            'hoverStrokeWidth': 1,
             'radius': 1,
+            'shadow': {
+              'fill': '#000',
+              'opacity': 0.35
+            },
             'width': 90,
             'height': 22
           },
@@ -428,9 +432,11 @@ module.exports = function (dep) {
             'labelFill': '#696969',
             'stroke': '#c8cecd',
             'strokeWidth': 1,
-            'hoverStroke': '#1e1f1f',
-            'hoverStrokeWidth': 1,
             'radius': 1,
+            'shadow': {
+              'fill': '#000',
+              'opacity': 0.35
+            },
             'width': 100,
             'height': 22
           },
@@ -465,6 +471,10 @@ module.exports = function (dep) {
             'hoverStrokeWidth': 0,
             'hoverStroke': '',
             'radius': 1,
+            'shadow': {
+              'fill': '#000',
+              'opacity': 0.35
+            },
             'width': 54,
             'height': 22
           },
@@ -485,6 +495,10 @@ module.exports = function (dep) {
             'hoverStrokeWidth': 0,
             'hoverStroke': '',
             'radius': 1,
+            'shadow': {
+              'fill': '#000',
+              'opacity': 0.35
+            },
             'width': 54,
             'height': 22
           },
@@ -823,6 +837,10 @@ module.exports = function (dep) {
       return this;
     }
 
+    /**
+     * Sets initial aggregation provided by user
+     * @private
+     */
     setInitialAggregation () {
       var self = this,
         config = self.config,

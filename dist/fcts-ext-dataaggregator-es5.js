@@ -302,6 +302,15 @@
 
 	        self.toolbars.push(self.createToolbar());
 
+	        composition.reactiveModel.onPropsChange(['bin-size', 'aggregation-fn'], function () {
+	          if (config.flag) {
+	            config.flag = false;
+	            setTimeout(function () {
+	              self.rangeOnChange();
+	            }, 200);
+	          }
+	        });
+
 	        window.Aggregator = self;
 	        return self;
 	      }
@@ -938,9 +947,15 @@
 
 	        return this;
 	      }
+
+	      /**
+	       * Compute and populate toolboxes with valid values on change in range of visual window
+	       * @private
+	       */
+
 	    }, {
-	      key: 'draw',
-	      value: function draw(x, y, width, height, group) {
+	      key: 'rangeOnChange',
+	      value: function rangeOnChange() {
 	        var self = this,
 	            config = self.config,
 	            toolboxCompConfig = config.toolboxComponent.config,
@@ -949,13 +964,7 @@
 	            aggMethodSelectMenu = toolboxCompConfig.aggMethodSelectMenu,
 	            applyButton = toolboxCompConfig.applyButton,
 	            resetButton = toolboxCompConfig.resetButton,
-	            measurement = self.measurement,
-	            toolbars = self.toolbars,
-	            ln,
-	            i,
-	            toolbar,
 	            model = config.composition.reactiveModel,
-	            dataAgg = config.dataAgg,
 	            timePeriodVal,
 	            timePeriodSelectMenuOpt,
 	            validTimePeriod,
@@ -966,132 +975,137 @@
 	            aggVal,
 	            aggMethodSelectMenuOpt,
 	            avlAggMethods,
-	            flag = true,
+	            aggregation = self.aggregation,
+	            currentAggregationObj,
+	            timePeriod,
+	            timePeriodMultiplier,
+	            aggregationMethod;
 
+	        self.getValidAggregation();
+	        currentAggregationObj = self.getCurrentAggreation();
+	        timePeriod = currentAggregationObj.timePeriod;
+	        timePeriodMultiplier = currentAggregationObj.timePeriodMultiplier;
+	        aggregationMethod = currentAggregationObj.aggregationMethod;
 
-	        /**
-	         * Compute and populate toolboxes with valid values on change in range of visual window
-	         * @private
-	         */
-	        rangeOnChange = function rangeOnChange() {
-	          var aggregation = self.aggregation,
-	              currentAggregationObj,
-	              timePeriod,
-	              timePeriodMultiplier,
-	              aggregationMethod;
+	        timePeriodSelectMenuOpt = [];
+	        timeMulSelectMenuOpt = [];
+	        aggMethodSelectMenuOpt = [];
 
-	          self.getValidAggregation();
-	          currentAggregationObj = self.getCurrentAggreation();
-	          timePeriod = currentAggregationObj.timePeriod;
-	          timePeriodMultiplier = currentAggregationObj.timePeriodMultiplier;
-	          aggregationMethod = currentAggregationObj.aggregationMethod;
+	        validTimePeriod = config.validTimePeriod;
+	        validTimePeriodMultiplier = config.validTimePeriodMultiplier;
+	        avlAggMethods = config.avlAggMethods;
 
-	          timePeriodSelectMenuOpt = [];
-	          timeMulSelectMenuOpt = [];
-	          aggMethodSelectMenuOpt = [];
+	        applyButton.updateVisual('disabled');
 
-	          validTimePeriod = config.validTimePeriod;
-	          validTimePeriodMultiplier = config.validTimePeriodMultiplier;
-	          avlAggMethods = config.avlAggMethods;
+	        if (aggregation.binSize !== model.prop('bin-size') && aggregationMethod.value === config.defaultAggMethod) {
+	          aggregation.binSize = null;
+	          aggregation.aggregationMethod = null;
+	          resetButton.updateVisual('disabled');
+	        } else {
+	          resetButton.updateVisual('enabled');
+	        }
 
-	          applyButton.updateVisual('disabled');
+	        if (!config.canAggregate) {
+	          timePeriodSelectMenu.updateVisual('disabled');
+	          timeMulSelectMenu.updateVisual('disabled');
+	          aggMethodSelectMenu.updateVisual('disabled');
+	          resetButton.updateVisual('disabled');
+	        } else {
+	          timePeriodSelectMenu.updateVisual('enabled');
+	          timeMulSelectMenu.updateVisual('enabled');
+	          aggMethodSelectMenu.updateVisual('enabled');
+	        }
 
-	          if (aggregation.binSize !== model.prop('bin-size') && aggregationMethod.value === config.defaultAggMethod) {
-	            aggregation.binSize = null;
-	            aggregation.aggregationMethod = null;
-	            resetButton.updateVisual('disabled');
-	          } else {
-	            resetButton.updateVisual('enabled');
+	        var _iteratorNormalCompletion3 = true;
+	        var _didIteratorError3 = false;
+	        var _iteratorError3 = undefined;
+
+	        try {
+	          for (var _iterator3 = validTimePeriod[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	            timePeriodVal = _step3.value;
+
+	            timePeriodSelectMenuOpt.push({
+	              name: timePeriodVal.capitalize(),
+	              value: timePeriodVal
+	            });
 	          }
-
-	          if (!config.canAggregate) {
-	            timePeriodSelectMenu.updateVisual('disabled');
-	            timeMulSelectMenu.updateVisual('disabled');
-	            aggMethodSelectMenu.updateVisual('disabled');
-	            resetButton.updateVisual('disabled');
-	          } else {
-	            timePeriodSelectMenu.updateVisual('enabled');
-	            timeMulSelectMenu.updateVisual('enabled');
-	            aggMethodSelectMenu.updateVisual('enabled');
+	        } catch (err) {
+	          _didIteratorError3 = true;
+	          _iteratorError3 = err;
+	        } finally {
+	          try {
+	            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	              _iterator3.return();
+	            }
+	          } finally {
+	            if (_didIteratorError3) {
+	              throw _iteratorError3;
+	            }
 	          }
+	        }
 
-	          var _iteratorNormalCompletion3 = true;
-	          var _didIteratorError3 = false;
-	          var _iteratorError3 = undefined;
+	        timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
+	        timePeriodSelectMenu.value(timePeriod);
+
+	        indexOfTimeUnit = validTimePeriod.indexOf(timePeriod);
+
+	        if (indexOfTimeUnit >= 0) {
+	          var _iteratorNormalCompletion4 = true;
+	          var _didIteratorError4 = false;
+	          var _iteratorError4 = undefined;
 
 	          try {
-	            for (var _iterator3 = validTimePeriod[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-	              timePeriodVal = _step3.value;
+	            for (var _iterator4 = validTimePeriodMultiplier[indexOfTimeUnit][Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	              multiplierVal = _step4.value;
 
-	              timePeriodSelectMenuOpt.push({
-	                name: timePeriodVal.capitalize(),
-	                value: timePeriodVal
+	              timeMulSelectMenuOpt.push({
+	                name: multiplierVal.toString(),
+	                value: multiplierVal.toString()
 	              });
 	            }
 	          } catch (err) {
-	            _didIteratorError3 = true;
-	            _iteratorError3 = err;
+	            _didIteratorError4 = true;
+	            _iteratorError4 = err;
 	          } finally {
 	            try {
-	              if (!_iteratorNormalCompletion3 && _iterator3.return) {
-	                _iterator3.return();
+	              if (!_iteratorNormalCompletion4 && _iterator4.return) {
+	                _iterator4.return();
 	              }
 	            } finally {
-	              if (_didIteratorError3) {
-	                throw _iteratorError3;
+	              if (_didIteratorError4) {
+	                throw _iteratorError4;
 	              }
 	            }
 	          }
+	        }
 
-	          timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
-	          timePeriodSelectMenu.value(timePeriod);
+	        timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
+	        timeMulSelectMenu.value(timePeriodMultiplier.toString());
 
-	          indexOfTimeUnit = validTimePeriod.indexOf(timePeriod);
+	        for (aggVal in avlAggMethods) {
+	          aggMethodSelectMenuOpt.push({
+	            name: avlAggMethods[aggVal].formalName.capitalize(),
+	            value: avlAggMethods[aggVal].nickName
+	          });
+	        }
 
-	          if (indexOfTimeUnit >= 0) {
-	            var _iteratorNormalCompletion4 = true;
-	            var _didIteratorError4 = false;
-	            var _iteratorError4 = undefined;
-
-	            try {
-	              for (var _iterator4 = validTimePeriodMultiplier[indexOfTimeUnit][Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-	                multiplierVal = _step4.value;
-
-	                timeMulSelectMenuOpt.push({
-	                  name: multiplierVal.toString(),
-	                  value: multiplierVal.toString()
-	                });
-	              }
-	            } catch (err) {
-	              _didIteratorError4 = true;
-	              _iteratorError4 = err;
-	            } finally {
-	              try {
-	                if (!_iteratorNormalCompletion4 && _iterator4.return) {
-	                  _iterator4.return();
-	                }
-	              } finally {
-	                if (_didIteratorError4) {
-	                  throw _iteratorError4;
-	                }
-	              }
-	            }
-	          }
-
-	          timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
-	          timeMulSelectMenu.value(timePeriodMultiplier.toString());
-
-	          for (aggVal in avlAggMethods) {
-	            aggMethodSelectMenuOpt.push({
-	              name: avlAggMethods[aggVal].formalName.capitalize(),
-	              value: avlAggMethods[aggVal].nickName
-	            });
-	          }
-
-	          aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
-	          aggMethodSelectMenu.value(aggregationMethod.value);
-	          flag = true;
-	        };
+	        aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
+	        aggMethodSelectMenu.value(aggregationMethod.value);
+	        config.flag = true;
+	      }
+	    }, {
+	      key: 'draw',
+	      value: function draw(x, y, width, height, group) {
+	        var self = this,
+	            config = self.config,
+	            toolboxCompConfig = config.toolboxComponent.config,
+	            resetButton = toolboxCompConfig.resetButton,
+	            measurement = self.measurement,
+	            toolbars = self.toolbars,
+	            ln,
+	            i,
+	            toolbar,
+	            dataAgg = config.dataAgg;
 
 	        self.getAvailablelAggreagation();
 
@@ -1106,19 +1120,9 @@
 	            toolbar.draw(x, y, group);
 	          }
 	        }
-	        rangeOnChange();
-	        applyButton.updateVisual('disabled');
+	        self.rangeOnChange();
 	        resetButton.updateVisual('disabled');
 	        config.defaultAggMethod = dataAgg.getDefaultAggregationMethod().nickName;
-
-	        model.onPropsChange(['bin-size', 'aggregation-fn'], function () {
-	          if (flag) {
-	            flag = false;
-	            setTimeout(function () {
-	              rangeOnChange();
-	            }, 200);
-	          }
-	        });
 	      }
 	    }, {
 	      key: 'dispose',

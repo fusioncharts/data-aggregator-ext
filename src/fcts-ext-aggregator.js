@@ -211,6 +211,15 @@ module.exports = function (dep) {
 
       self.toolbars.push(self.createToolbar());
 
+      composition.reactiveModel.onPropsChange(['bin-size', 'aggregation-fn'], function () {
+        if (config.flag) {
+          config.flag = false;
+          setTimeout(() => {
+            self.rangeOnChange();
+          }, 200);
+        }
+      });
+
       window.Aggregator = self;
       return self;
     }
@@ -814,7 +823,11 @@ module.exports = function (dep) {
       return this;
     }
 
-    draw (x, y, width, height, group) {
+    /**
+     * Compute and populate toolboxes with valid values on change in range of visual window
+     * @private
+     */
+    rangeOnChange () {
       var self = this,
         config = self.config,
         toolboxCompConfig = config.toolboxComponent.config,
@@ -823,13 +836,7 @@ module.exports = function (dep) {
         aggMethodSelectMenu = toolboxCompConfig.aggMethodSelectMenu,
         applyButton = toolboxCompConfig.applyButton,
         resetButton = toolboxCompConfig.resetButton,
-        measurement = self.measurement,
-        toolbars = self.toolbars,
-        ln,
-        i,
-        toolbar,
         model = config.composition.reactiveModel,
-        dataAgg = config.dataAgg,
 
         timePeriodVal,
         timePeriodSelectMenuOpt,
@@ -843,90 +850,96 @@ module.exports = function (dep) {
         aggVal,
         aggMethodSelectMenuOpt,
         avlAggMethods,
-        flag = true,
 
-        /**
-         * Compute and populate toolboxes with valid values on change in range of visual window
-         * @private
-         */
-        rangeOnChange = () => {
-          var aggregation = self.aggregation,
-            currentAggregationObj,
-            timePeriod,
-            timePeriodMultiplier,
-            aggregationMethod;
+        aggregation = self.aggregation,
+        currentAggregationObj,
+        timePeriod,
+        timePeriodMultiplier,
+        aggregationMethod;
 
-          self.getValidAggregation();
-          currentAggregationObj = self.getCurrentAggreation();
-          timePeriod = currentAggregationObj.timePeriod;
-          timePeriodMultiplier = currentAggregationObj.timePeriodMultiplier;
-          aggregationMethod = currentAggregationObj.aggregationMethod;
+      self.getValidAggregation();
+      currentAggregationObj = self.getCurrentAggreation();
+      timePeriod = currentAggregationObj.timePeriod;
+      timePeriodMultiplier = currentAggregationObj.timePeriodMultiplier;
+      aggregationMethod = currentAggregationObj.aggregationMethod;
 
-          timePeriodSelectMenuOpt = [];
-          timeMulSelectMenuOpt = [];
-          aggMethodSelectMenuOpt = [];
+      timePeriodSelectMenuOpt = [];
+      timeMulSelectMenuOpt = [];
+      aggMethodSelectMenuOpt = [];
 
-          validTimePeriod = config.validTimePeriod;
-          validTimePeriodMultiplier = config.validTimePeriodMultiplier;
-          avlAggMethods = config.avlAggMethods;
+      validTimePeriod = config.validTimePeriod;
+      validTimePeriodMultiplier = config.validTimePeriodMultiplier;
+      avlAggMethods = config.avlAggMethods;
 
-          applyButton.updateVisual('disabled');
+      applyButton.updateVisual('disabled');
 
-          if (aggregation.binSize !== model.prop('bin-size') &&
-            aggregationMethod.value === config.defaultAggMethod) {
-            aggregation.binSize = null;
-            aggregation.aggregationMethod = null;
-            resetButton.updateVisual('disabled');
-          } else {
-            resetButton.updateVisual('enabled');
-          }
+      if (aggregation.binSize !== model.prop('bin-size') &&
+        aggregationMethod.value === config.defaultAggMethod) {
+        aggregation.binSize = null;
+        aggregation.aggregationMethod = null;
+        resetButton.updateVisual('disabled');
+      } else {
+        resetButton.updateVisual('enabled');
+      }
 
-          if (!config.canAggregate) {
-            timePeriodSelectMenu.updateVisual('disabled');
-            timeMulSelectMenu.updateVisual('disabled');
-            aggMethodSelectMenu.updateVisual('disabled');
-            resetButton.updateVisual('disabled');
-          } else {
-            timePeriodSelectMenu.updateVisual('enabled');
-            timeMulSelectMenu.updateVisual('enabled');
-            aggMethodSelectMenu.updateVisual('enabled');
-          }
+      if (!config.canAggregate) {
+        timePeriodSelectMenu.updateVisual('disabled');
+        timeMulSelectMenu.updateVisual('disabled');
+        aggMethodSelectMenu.updateVisual('disabled');
+        resetButton.updateVisual('disabled');
+      } else {
+        timePeriodSelectMenu.updateVisual('enabled');
+        timeMulSelectMenu.updateVisual('enabled');
+        aggMethodSelectMenu.updateVisual('enabled');
+      }
 
-          for (timePeriodVal of validTimePeriod) {
-            timePeriodSelectMenuOpt.push({
-              name: timePeriodVal.capitalize(),
-              value: timePeriodVal
-            });
-          }
+      for (timePeriodVal of validTimePeriod) {
+        timePeriodSelectMenuOpt.push({
+          name: timePeriodVal.capitalize(),
+          value: timePeriodVal
+        });
+      }
 
-          timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
-          timePeriodSelectMenu.value(timePeriod);
+      timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
+      timePeriodSelectMenu.value(timePeriod);
 
-          indexOfTimeUnit = validTimePeriod.indexOf(timePeriod);
+      indexOfTimeUnit = validTimePeriod.indexOf(timePeriod);
 
-          if (indexOfTimeUnit >= 0) {
-            for (multiplierVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
-              timeMulSelectMenuOpt.push({
-                name: multiplierVal.toString(),
-                value: multiplierVal.toString()
-              });
-            }
-          }
+      if (indexOfTimeUnit >= 0) {
+        for (multiplierVal of validTimePeriodMultiplier[indexOfTimeUnit]) {
+          timeMulSelectMenuOpt.push({
+            name: multiplierVal.toString(),
+            value: multiplierVal.toString()
+          });
+        }
+      }
 
-          timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
-          timeMulSelectMenu.value(timePeriodMultiplier.toString());
+      timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
+      timeMulSelectMenu.value(timePeriodMultiplier.toString());
 
-          for (aggVal in avlAggMethods) {
-            aggMethodSelectMenuOpt.push({
-              name: avlAggMethods[aggVal].formalName.capitalize(),
-              value: avlAggMethods[aggVal].nickName
-            });
-          }
+      for (aggVal in avlAggMethods) {
+        aggMethodSelectMenuOpt.push({
+          name: avlAggMethods[aggVal].formalName.capitalize(),
+          value: avlAggMethods[aggVal].nickName
+        });
+      }
 
-          aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
-          aggMethodSelectMenu.value(aggregationMethod.value);
-          flag = true;
-        };
+      aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
+      aggMethodSelectMenu.value(aggregationMethod.value);
+      config.flag = true;
+    }
+
+    draw (x, y, width, height, group) {
+      var self = this,
+        config = self.config,
+        toolboxCompConfig = config.toolboxComponent.config,
+        resetButton = toolboxCompConfig.resetButton,
+        measurement = self.measurement,
+        toolbars = self.toolbars,
+        ln,
+        i,
+        toolbar,
+        dataAgg = config.dataAgg;
 
       self.getAvailablelAggreagation();
 
@@ -941,19 +954,9 @@ module.exports = function (dep) {
           toolbar.draw(x, y, group);
         }
       }
-      rangeOnChange();
-      applyButton.updateVisual('disabled');
+      self.rangeOnChange();
       resetButton.updateVisual('disabled');
       config.defaultAggMethod = dataAgg.getDefaultAggregationMethod().nickName;
-
-      model.onPropsChange(['bin-size', 'aggregation-fn'], function () {
-        if (flag) {
-          flag = false;
-          setTimeout(() => {
-            rangeOnChange();
-          }, 200);
-        }
-      });
     }
 
     dispose () {

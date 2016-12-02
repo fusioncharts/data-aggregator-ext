@@ -966,6 +966,7 @@
 	            aggVal,
 	            aggMethodSelectMenuOpt,
 	            avlAggMethods,
+	            flag = true,
 
 
 	        /**
@@ -1089,6 +1090,7 @@
 
 	          aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
 	          aggMethodSelectMenu.value(aggregationMethod.value);
+	          flag = true;
 	        };
 
 	        self.getAvailablelAggreagation();
@@ -1109,7 +1111,14 @@
 	        resetButton.updateVisual('disabled');
 	        config.defaultAggMethod = dataAgg.getDefaultAggregationMethod().nickName;
 
-	        model.onPropsChange(['bin-size', 'aggregation-fn'], rangeOnChange);
+	        model.onPropsChange(['bin-size', 'aggregation-fn'], function () {
+	          if (flag) {
+	            flag = false;
+	            setTimeout(function () {
+	              rangeOnChange();
+	            }, 200);
+	          }
+	        });
 	      }
 	    }, {
 	      key: 'dispose',

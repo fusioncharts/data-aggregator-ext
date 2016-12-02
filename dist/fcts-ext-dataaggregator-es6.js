@@ -924,6 +924,7 @@
 	        aggVal,
 	        aggMethodSelectMenuOpt,
 	        avlAggMethods,
+	        flag = true,
 
 	        /**
 	         * Compute and populate toolboxes with valid values on change in range of visual window
@@ -1005,6 +1006,7 @@
 
 	          aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
 	          aggMethodSelectMenu.value(aggregationMethod.value);
+	          flag = true;
 	        };
 
 	      self.getAvailablelAggreagation();
@@ -1025,7 +1027,14 @@
 	      resetButton.updateVisual('disabled');
 	      config.defaultAggMethod = dataAgg.getDefaultAggregationMethod().nickName;
 
-	      model.onPropsChange(['bin-size', 'aggregation-fn'], rangeOnChange);
+	      model.onPropsChange(['bin-size', 'aggregation-fn'], function () {
+	        if (flag) {
+	          flag = false;
+	          setTimeout(() => {
+	            rangeOnChange();
+	          }, 200);
+	        }
+	      });
 	    }
 
 	    dispose () {

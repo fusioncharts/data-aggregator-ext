@@ -156,6 +156,7 @@
 	        avlTimePeriods,
 	        avlTimeMultiplier,
 	        maxNumOfPlot = config.composition.reactiveModel.model['max-plot-point'],
+	        minimumConsecutiveDifference = config.composition.dataset.category.minimumConsecutiveDifference,
 	        multipliersArr,
 	        currentTimeLength,
 	        timePeriod,
@@ -186,7 +187,7 @@
 	          multiplier = avlTimeMultiplier[i][j];
 	          binSize = multiplier * time;
 
-	          if (binSize >= minBinSize) {
+	          if ((binSize >= minBinSize) && (binSize > minimumConsecutiveDifference)) {
 	            multipliersArr.push(avlTimeMultiplier[i][j]);
 	          }
 	        }

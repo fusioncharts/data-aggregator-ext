@@ -1,43 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>fcts-ext-aggregator.js - Documentation</title>
-
-    <script src="scripts/prettify/prettify.js"></script>
-    <script src="scripts/prettify/lang-css.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
-</head>
-<body>
-
-<input type="checkbox" id="nav-trigger" class="nav-trigger" />
-<label for="nav-trigger" class="navicon-button x">
-  <div class="navicon"></div>
-</label>
-
-<label for="nav-trigger" class="overlay"></label>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Aggregator.html">Aggregator</a></li></ul>
-</nav>
-
-<div id="main">
-    
-    <h1 class="page-title">fcts-ext-aggregator.js</h1>
-    
-
-    
-
-
-
-    
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>'use strict';
+'use strict';
 
 module.exports = function (dep) {
   var capitalize = function (string) {
@@ -92,7 +53,7 @@ module.exports = function (dep) {
       config.avlTimeMultiplier = [];
       len = avlTimePeriods.length;
 
-      for (i = 0; i &lt; len; i++) {
+      for (i = 0; i < len; i++) {
         config.avlTimeMultiplier.push(avlTimePeriods[i].possibleFactors);
       }
     }
@@ -135,16 +96,16 @@ module.exports = function (dep) {
       config.validTimePeriodMultiplier = [];
       config.avlAggMethods = dataAgg.getAllAggregationMethod();
 
-      for (i = 0, len1 = avlTimePeriods.length; i &lt; len1; i++) {
+      for (i = 0, len1 = avlTimePeriods.length; i < len1; i++) {
         timePeriod = avlTimePeriods[i].name;
         time = avlTimePeriods[i].interval;
         multipliersArr = [];
 
-        for (j = 0, len2 = avlTimeMultiplier[i].length; j &lt; len2; j++) {
+        for (j = 0, len2 = avlTimeMultiplier[i].length; j < len2; j++) {
           multiplier = avlTimeMultiplier[i][j];
           binSize = multiplier * time;
 
-          if ((binSize >= minBinSize) &amp;&amp; (binSize > minimumConsecutiveDifference)) {
+          if ((binSize >= minBinSize) && (binSize > minimumConsecutiveDifference)) {
             multipliersArr.push(avlTimeMultiplier[i][j]);
           }
         }
@@ -220,7 +181,7 @@ module.exports = function (dep) {
               param = '';
             self[saveTo] = self[saveTo] || {};
             self.requiredParams = {};
-            for (i = 0; i &lt; ii; ++i) {
+            for (i = 0; i < ii; ++i) {
               param = requiredParams[i];
               self[saveTo][param] = arguments[i];
             }
@@ -335,7 +296,7 @@ module.exports = function (dep) {
 
           timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
 
-          if (indexOfTimeMul &lt; 0) {
+          if (indexOfTimeMul < 0) {
             timeMulSelectMenu.value(validTimePeriodMultiplier[indexOfTimeUnit][0].toString());
           } else {
             timeMulSelectMenu.value(prevTimePeroidMulVal);
@@ -360,7 +321,7 @@ module.exports = function (dep) {
           if (aggMethodSelectMenu.value() === '') {
             aggMethodSelectMenu.value(config.defaultAggMethod);
           }
-          if (timePeriodSelectMenu.value() === '' &amp;&amp; timeMulSelectMenu.value() === '') {
+          if (timePeriodSelectMenu.value() === '' && timeMulSelectMenu.value() === '') {
             timePeriodSelectMenu.value(config.validTimePeriod[0]);
             timePeriodOnChange();
           }
@@ -526,31 +487,31 @@ module.exports = function (dep) {
       style = {
         label: style.label || {},
         timeMultiplierInputField: {
-          active: (style.timeMultiplierInputField &amp;&amp; style.timeMultiplierInputField.active) || {},
-          inactive: (style.timeMultiplierInputField &amp;&amp; style.timeMultiplierInputField.inactive) || {}
+          active: (style.timeMultiplierInputField && style.timeMultiplierInputField.active) || {},
+          inactive: (style.timeMultiplierInputField && style.timeMultiplierInputField.inactive) || {}
         },
         timePeriodInputField: {
-          active: (style.timePeriodInputField &amp;&amp; style.timePeriodInputField.active) || {},
-          inactive: (style.timePeriodInputField &amp;&amp; style.timePeriodInputField.inactive) || {}
+          active: (style.timePeriodInputField && style.timePeriodInputField.active) || {},
+          inactive: (style.timePeriodInputField && style.timePeriodInputField.inactive) || {}
         },
         aggregationMethodInputField: {
-          active: (style.aggregationMethodInputField &amp;&amp; style.aggregationMethodInputField.active) || {},
-          inactive: (style.aggregationMethodInputField &amp;&amp; style.aggregationMethodInputField.inactive) || {}
+          active: (style.aggregationMethodInputField && style.aggregationMethodInputField.active) || {},
+          inactive: (style.aggregationMethodInputField && style.aggregationMethodInputField.inactive) || {}
         },
         dropDown: {
-          active: (style.dropDown &amp;&amp; style.dropDown.active) || {},
-          normal: (style.dropDown &amp;&amp; style.dropDown.normal) || {}
+          active: (style.dropDown && style.dropDown.active) || {},
+          normal: (style.dropDown && style.dropDown.normal) || {}
         },
         applyButton: {
-          active: (style.applyButton &amp;&amp; style.applyButton.active) || {},
-          inactive: (style.applyButton &amp;&amp; style.applyButton.inactive) || {}
+          active: (style.applyButton && style.applyButton.active) || {},
+          inactive: (style.applyButton && style.applyButton.inactive) || {}
         },
         resetButton: {
-          active: (style.resetButton &amp;&amp; style.resetButton.active) || {},
-          inactive: (style.resetButton &amp;&amp; style.resetButton.inactive) || {}
+          active: (style.resetButton && style.resetButton.active) || {},
+          inactive: (style.resetButton && style.resetButton.inactive) || {}
         },
         base: {
-          font: (style.base &amp;&amp; style.base.font) || {}
+          font: (style.base && style.base.font) || {}
         }
       };
 
@@ -769,7 +730,7 @@ module.exports = function (dep) {
         i,
         ln;
 
-      for (i = 0, ln = this.toolbars.length; i &lt; ln; i++) {
+      for (i = 0, ln = this.toolbars.length; i < ln; i++) {
         logicalSpace = this.toolbars[i].getLogicalSpace(availableWidth, availableHeight);
         width = Math.max(logicalSpace.width, width);
         height += logicalSpace.height;
@@ -875,9 +836,9 @@ module.exports = function (dep) {
 
       if (set) {
         if (!config.drawn) {
-          timePeriodVal = aggregate.timeUnit &amp;&amp; aggregate.timeUnit.toString().toLowerCase();
+          timePeriodVal = aggregate.timeUnit && aggregate.timeUnit.toString().toLowerCase();
           timePeriodMultiplierVal = aggregate.timeMultiplier;
-          aggMethod = aggregate.method &amp;&amp; aggregate.method.toString().toLowerCase();
+          aggMethod = aggregate.method && aggregate.method.toString().toLowerCase();
 
           self.getValidAggregation();
           validTimePeriod = config.validTimePeriod;
@@ -1002,7 +963,7 @@ module.exports = function (dep) {
 
       applyButton.updateVisual('disabled');
 
-      if (aggregation.binSize !== model.prop('bin-size') &amp;&amp;
+      if (aggregation.binSize !== model.prop('bin-size') &&
         (aggregationMethod.value === config.defaultAggMethod || aggregationMethod.value === '')) {
         aggregation.binSize = null;
         aggregation.aggregationMethod = null;
@@ -1064,14 +1025,14 @@ module.exports = function (dep) {
       width = width === undefined ? measurement.width : width;
       height = height === undefined ? measurement.height : height;
       group = group === undefined ? self.parentGroup : group;
-      if (width &amp;&amp; height) {
-        for (i = 0, ln = toolbars.length; i &lt; ln; i++) {
+      if (width && height) {
+        for (i = 0, ln = toolbars.length; i < ln; i++) {
           toolbar = toolbars[i];
           toolbar.draw(x, y, group);
         }
       }
       config.defaultAggMethod = dataAgg.getDefaultAggregationMethod().nickName;
-      !config.drawn &amp;&amp; self.apply(1);
+      !config.drawn && self.apply(1);
       self.rangeOnChange();
       config.drawn = true;
     }
@@ -1082,22 +1043,3 @@ module.exports = function (dep) {
   }
   return Aggregator;
 };
-</code></pre>
-        </article>
-    </section>
-
-
-
-
-</div>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sat Dec 03 2016 20:07:20 GMT+0530 (IST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
-</footer>
-
-<script>prettyPrint();</script>
-<script src="scripts/linenumber.js"></script>
-</body>
-</html>

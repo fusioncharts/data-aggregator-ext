@@ -5,12 +5,7 @@
         "promise"
     ],
     "globals": {
-      "FusionCharts": true,
-      "GrowthAnalyser": true,
-      "MultiCharting": true,
-      "FCDataFilterExt": true,
-      "FilterVisual": true,
-      "$": true
+      "FusionCharts": true
     },
     "rules": {
       "one-var": ["off"],

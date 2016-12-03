@@ -64,8 +64,8 @@
 	})(typeof window !== 'undefined' ? window : undefined, function (_window, windowExists) {
 	  var FC = _window.FusionCharts;
 
-	  FC.register('extension', ['private', 'data-aggregator', function () {
-	    FC.registerComponent('extensions', 'data-aggregator', AggregatorGetter({ FC: FC }));
+	  FC.register('extension', ['private', 'data-aggregator-ext', function () {
+	    FC.registerComponent('extensions', 'data-aggregator-ext', AggregatorGetter({ FC: FC }));
 	  }]);
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)(module)))
@@ -96,14 +96,14 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	String.prototype.capitalize = function () {
-	  return this.charAt(0).toUpperCase() + this.slice(1);
-	};
-
 	module.exports = function (dep) {
+	  var capitalize = function capitalize(string) {
+	    return string.charAt(0).toUpperCase() + string.slice(1);
+	  };
 	  /**
 	   * Class representing the Data Aggregator.
 	   */
+
 	  var Aggregator = function () {
 	    /**
 	     * Create a Aggregator.
@@ -1120,7 +1120,7 @@
 	            timePeriodVal = _step4.value;
 
 	            timePeriodSelectMenuOpt.push({
-	              name: timePeriodVal.capitalize(),
+	              name: capitalize(timePeriodVal),
 	              value: timePeriodVal
 	            });
 	          }
@@ -1179,7 +1179,7 @@
 
 	        for (aggVal in avlAggMethods) {
 	          aggMethodSelectMenuOpt.push({
-	            name: avlAggMethods[aggVal].formalName.capitalize(),
+	            name: capitalize(avlAggMethods[aggVal].formalName),
 	            value: avlAggMethods[aggVal].nickName
 	          });
 	        }

@@ -13,12 +13,9 @@
   </style>
 </head>
 <body>
-  <!-- <script src="node_modules/fusioncharts/fusioncharts.js" charset="utf-8"></script>
-  <script src="node_modules/fusioncharts/fusioncharts.timeseries.js" charset="utf-8"></script> -->
-
   <script src="lib/fusioncharts.js" charset="utf-8"></script>
   <script src="lib/fusioncharts.timeseries.js" charset="utf-8"></script>
-  <script src="dist/fcts-ext-dataaggregator-es6.js" charset="utf-8"></script>
+  <script src="dist/data-aggregator-ext.min.js" charset="utf-8"></script>
   <div id="mainCont"></div>
   <div id="chart-container"></div>
   <script type="text/javascript">
@@ -140,16 +137,16 @@
 
                     },
                     extensions: {
-                      'data-aggregator': {
+                      'data-aggregator-ext': {
                         disabled: false,
                         position: 'top',
                         alignment: 'left',
                         layout: 'inline',
-                        // aggregate: {
-                        //   timeUnit: 'Month',
-                        //   timeMultiplier: '3',
-                        //   method: 'Mean'
-                        // },
+                        aggregate: {
+                          timeUnit: 'Month',
+                          timeMultiplier: '3',
+                          method: 'Mean'
+                        },
                         orientation: 'horizontal',
                         styles: {
                           label: {

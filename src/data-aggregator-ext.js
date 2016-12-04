@@ -139,25 +139,14 @@ module.exports = function (dep) {
       if (isFinite(binSize)) {
         suitableInterval = dataAgg.timeRules.getSuitableInterval(binSize);
         currentAggMethod = model.prop('aggregation-fn');
-      } else {
-        suitableInterval = {
-          name: '',
-          step: ''
-        };
-        config.validTimePeriod[config.validTimePeriod.length - 1] = suitableInterval.name;
-        config.validTimePeriodMultiplier[config.validTimePeriodMultiplier.length - 1] = [suitableInterval.step];
-        currentAggMethod = config.avlAggMethods['invalid'] = {
-          formalName: '',
-          nickName: ''
-        };
       }
 
       return {
-        timePeriod: suitableInterval.name,
-        timePeriodMultiplier: suitableInterval.step,
+        timePeriod: suitableInterval && suitableInterval.name,
+        timePeriodMultiplier: suitableInterval && suitableInterval.step,
         aggregationMethod: {
-          value: currentAggMethod.nickName,
-          text: currentAggMethod.formalName
+          value: currentAggMethod && currentAggMethod.nickName,
+          text: currentAggMethod && currentAggMethod.formalName
         }
       };
     }
@@ -316,7 +305,10 @@ module.exports = function (dep) {
         onChange = (type) => {
           var currentAgg = self.getCurrentAggreation();
 
-          if (currentAgg.timePeriodMultiplier.toString() !== timeMulSelectMenu.value() ||
+          currentAgg.timePeriodMultiplier = currentAgg.timePeriodMultiplier &&
+            currentAgg.timePeriodMultiplier.toString();
+
+          if (currentAgg.timePeriodMultiplier !== timeMulSelectMenu.value() ||
             currentAgg.timePeriod !== timePeriodSelectMenu.value() ||
             currentAgg.aggregationMethod.value !== aggMethodSelectMenu.value()) {
             applyButton.updateVisual('enabled');
@@ -324,10 +316,10 @@ module.exports = function (dep) {
             applyButton.updateVisual('disabled');
           }
 
-          if (aggMethodSelectMenu.value() === '') {
+          if (!aggMethodSelectMenu.value()) {
             aggMethodSelectMenu.value(config.defaultAggMethod);
           }
-          if (timePeriodSelectMenu.value() === '' && timeMulSelectMenu.value() === '') {
+          if (!timePeriodSelectMenu.value() && !timeMulSelectMenu.value()) {
             timePeriodSelectMenu.value(config.validTimePeriod[0]);
             timePeriodOnChange();
           }
@@ -938,7 +930,7 @@ module.exports = function (dep) {
       applyButton.updateVisual('disabled');
 
       if (aggregation.binSize !== model.prop('bin-size') &&
-        (aggregationMethod.value === config.defaultAggMethod || aggregationMethod.value === '')) {
+        (aggregationMethod.value === config.defaultAggMethod || !aggregationMethod.value)) {
         aggregation.binSize = null;
         aggregation.aggregationMethod = null;
         resetButton.updateVisual('disabled');
@@ -954,7 +946,7 @@ module.exports = function (dep) {
       }
 
       timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
-      timePeriodSelectMenu.value(timePeriod);
+      timePeriod ? timePeriodSelectMenu.value(timePeriod) : timePeriodSelectMenu.setPlaceHolderValue('');
 
       indexOfTimeUnit = validTimePeriod.indexOf(timePeriod);
 
@@ -968,7 +960,8 @@ module.exports = function (dep) {
       }
 
       timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
-      timeMulSelectMenu.value(timePeriodMultiplier.toString());
+      timePeriodMultiplier ? timeMulSelectMenu.value(timePeriodMultiplier.toString())
+        : timeMulSelectMenu.setPlaceHolderValue('');
 
       for (aggVal in avlAggMethods) {
         aggMethodSelectMenuOpt.push({
@@ -978,7 +971,8 @@ module.exports = function (dep) {
       }
 
       aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
-      aggMethodSelectMenu.value(aggregationMethod.value);
+      aggregationMethod.value ? aggMethodSelectMenu.value(aggregationMethod.value)
+        : aggMethodSelectMenu.setPlaceHolderValue('');
       config.execute = true;
     }
 

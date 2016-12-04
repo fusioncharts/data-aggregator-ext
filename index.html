@@ -15,7 +15,7 @@
 <body>
   <script src="lib/fusioncharts.js" charset="utf-8"></script>
   <script src="lib/fusioncharts.timeseries.js" charset="utf-8"></script>
-  <script src="dist/data-aggregator.min.js" charset="utf-8"></script>
+  <script src="dist/data-aggregator.js" charset="utf-8"></script>
   <div id="mainCont"></div>
   <div id="chart-container"></div>
   <script type="text/javascript">
@@ -139,14 +139,14 @@
                     extensions: {
                       'data-aggregator': {
                         disabled: false,
-                        position: 'top',
-                        alignment: 'left',
+                        position: 'bottom',
+                        alignment: 'right',
                         layout: 'inline',
-                        aggregate: {
-                          timeUnit: 'month',
-                          timeMultiplier: '3',
-                          method: 'mean'
-                        },
+                        // aggregate: {
+                        //   timeUnit: 'month',
+                        //   timeMultiplier: '3',
+                        //   method: 'mean'
+                        // },
                         orientation: 'horizontal',
                         styles: {
                           label: {

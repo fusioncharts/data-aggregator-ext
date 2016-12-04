@@ -257,12 +257,14 @@ module.exports = function (dep) {
 
         multiplierVal,
         timeMulSelectMenuOpt,
-        timePeriodMenuDisableConfig,
-        timeMultiplierMenuDisableConfig,
-        aggMethodMenuDisableonfig,
         dropDownMenuStyle,
         applyButtonDisableConfig,
         resetButtonDisableConfig,
+        displayListAt,
+
+        usrConfig,
+        position,
+        alignment,
 
         style,
         usrConfigStyle,
@@ -343,7 +345,17 @@ module.exports = function (dep) {
 
       toolbar = new HorizontalToolbar(dependencies);
 
-      usrConfigStyle = config.usrConfig.styles || {
+      usrConfig = config.usrConfig;
+      position = usrConfig.position || 'bottom';
+      alignment = usrConfig.alignment || 'right';
+
+      if (position === 'top' || alignment === 'top') {
+        displayListAt = 'bottom';
+      } else if (position === 'bottom' || alignment === 'bottom') {
+        displayListAt = 'top';
+      }
+
+      usrConfigStyle = usrConfig.styles || {
         label: {
           'font-size': 13,
           'font-family': '"Lucida Grande", sans-serif',
@@ -358,18 +370,13 @@ module.exports = function (dep) {
             'stroke': '#c8cecd',
             'strokeWidth': 1,
             'radius': 1,
+            // 'displayListAt': 'top',
             'shadow': {
               'fill': '#000',
               'opacity': 0.35
             },
             'width': 50,
             'height': 22
-          },
-          inactive: {
-            'fill': '#fff',
-            'stroke-width': 1,
-            'stroke': '#ced5d4',
-            'labelFill': '#000'
           }
         },
         timePeriodInputField: {
@@ -379,18 +386,13 @@ module.exports = function (dep) {
             'stroke': '#c8cecd',
             'strokeWidth': 1,
             'radius': 1,
+            // 'displayListAt': 'top',
             'shadow': {
               'fill': '#000',
               'opacity': 0.35
             },
             'width': 90,
             'height': 22
-          },
-          inactive: {
-            'fill': '#fff',
-            'stroke-width': 1,
-            'stroke': '#ced5d4',
-            'labelFill': '#000'
           }
         },
         aggregationMethodInputField: {
@@ -400,18 +402,13 @@ module.exports = function (dep) {
             'stroke': '#c8cecd',
             'strokeWidth': 1,
             'radius': 1,
+            // 'displayListAt': 'top',
             'shadow': {
               'fill': '#000',
               'opacity': 0.35
             },
             'width': 100,
             'height': 22
-          },
-          inactive: {
-            'fill': '#fff',
-            'stroke-width': 1,
-            'stroke': '#ced5d4',
-            'labelFill': '#000'
           }
         },
         dropDown: {
@@ -491,16 +488,13 @@ module.exports = function (dep) {
       style = {
         label: style.label || {},
         timeMultiplierInputField: {
-          active: (style.timeMultiplierInputField && style.timeMultiplierInputField.active) || {},
-          inactive: (style.timeMultiplierInputField && style.timeMultiplierInputField.inactive) || {}
+          active: (style.timeMultiplierInputField && style.timeMultiplierInputField.active) || {}
         },
         timePeriodInputField: {
-          active: (style.timePeriodInputField && style.timePeriodInputField.active) || {},
-          inactive: (style.timePeriodInputField && style.timePeriodInputField.inactive) || {}
+          active: (style.timePeriodInputField && style.timePeriodInputField.active) || {}
         },
         aggregationMethodInputField: {
-          active: (style.aggregationMethodInputField && style.aggregationMethodInputField.active) || {},
-          inactive: (style.aggregationMethodInputField && style.aggregationMethodInputField.inactive) || {}
+          active: (style.aggregationMethodInputField && style.aggregationMethodInputField.active) || {}
         },
         dropDown: {
           active: (style.dropDown && style.dropDown.active) || {},
@@ -536,30 +530,6 @@ module.exports = function (dep) {
         fill: '#fff',
         borderThickness: 0
       });
-
-      timePeriodMenuDisableConfig = {
-        disabled: {
-          config: {
-            disabled: style.timeMultiplierInputField.inactive
-          }
-        }
-      };
-
-      timeMultiplierMenuDisableConfig = {
-        disabled: {
-          config: {
-            disabled: style.timePeriodInputField.inactive
-          }
-        }
-      };
-
-      aggMethodMenuDisableonfig = {
-        disabled: {
-          config: {
-            disabled: style.aggregationMethodInputField.inactive
-          }
-        }
-      };
 
       applyButtonDisableConfig = {
         disabled: {
@@ -631,31 +601,31 @@ module.exports = function (dep) {
       Object.assign(style.timePeriodInputField.active, {
         btnTextStyle: style.base.font,
         dropDownMenu: dropDownMenuStyle,
+        displayListAt: style.timePeriodInputField.active.displayListAt || displayListAt,
         margin: {
           right: 8
         }
       }));
-      timePeriodSelectMenu.setStateConfig(timePeriodMenuDisableConfig);
 
       toolboxCompConfig.timeMulSelectMenu = timeMulSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
       Object.assign(style.timeMultiplierInputField.active, {
         btnTextStyle: style.base.font,
         dropDownMenu: dropDownMenuStyle,
+        displayListAt: style.timeMultiplierInputField.active.displayListAt || displayListAt,
         margin: {
           right: 3
         }
       }));
-      timeMulSelectMenu.setStateConfig(timeMultiplierMenuDisableConfig);
 
       toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
       Object.assign(style.aggregationMethodInputField.active, {
         btnTextStyle: style.base.font,
+        displayListAt: style.aggregationMethodInputField.active.displayListAt || displayListAt,
         margin: {
           right: 11
         },
         dropDownMenu: dropDownMenuStyle
       }));
-      aggMethodSelectMenu.setStateConfig(aggMethodMenuDisableonfig);
 
       toolboxCompConfig.applyButton = applyButton = new toolbox.Symbol('APPLY', true, dependencies,
         Object.assign(style.applyButton.active, {

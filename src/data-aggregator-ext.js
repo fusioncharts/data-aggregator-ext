@@ -1,6 +1,10 @@
 'use strict';
 
 module.exports = function (dep) {
+  /**
+   * Capitalize the first letter of a given string and return the string
+   * @private
+   */
   var capitalize = function (string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
@@ -207,8 +211,8 @@ module.exports = function (dep) {
       self.toolbars.push(self.createToolbar());
 
       composition.reactiveModel.onPropsChange(['bin-size', 'aggregation-fn'], function () {
-        if (config.flag) {
-          config.flag = false;
+        if (config.execute) {
+          config.execute = false;
           setTimeout(() => {
             self.rangeOnChange();
           }, 200);
@@ -342,7 +346,7 @@ module.exports = function (dep) {
       usrConfigStyle = config.usrConfig.styles || {
         label: {
           'font-size': 13,
-          'font-family': '"Lucida Grande", "sans-serif"',
+          'font-family': '"Lucida Grande", sans-serif',
           'font-weight': 'normal',
           'fill': '#4b4b4b',
           'height': 22
@@ -476,7 +480,7 @@ module.exports = function (dep) {
           font: {
             'fontSize': 11,
             // 'fontWeight': 'bold',
-            'fontFamily': '"Lucida Grande", "sans-serif"'
+            'fontFamily': '"Lucida Grande", sans-serif'
             // 'fontStyle': 'italic'
           }
         }
@@ -1005,7 +1009,7 @@ module.exports = function (dep) {
 
       aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
       aggMethodSelectMenu.value(aggregationMethod.value);
-      config.flag = true;
+      config.execute = true;
     }
 
     draw (x, y, width, height, group) {

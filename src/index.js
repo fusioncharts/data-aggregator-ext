@@ -16,7 +16,7 @@ const AggregatorGetter = require('./data-aggregator-ext');
 })(typeof window !== 'undefined' ? window : this, function (_window, windowExists) {
   var FC = _window.FusionCharts;
 
-  FC.register('extension', ['private', 'data-aggregator-ext', function () {
-    FC.registerComponent('extensions', 'data-aggregator-ext', AggregatorGetter({FC: FC}));
+  FC.register('extension', ['private', 'data-aggregator', function () {
+    FC.registerComponent('extensions', 'data-aggregator', AggregatorGetter({FC: FC}));
   }]);
 });

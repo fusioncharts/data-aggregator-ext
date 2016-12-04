@@ -12,7 +12,7 @@ if (env === 'production') {
   exportObj = {
     entry: './src/index.js',
     output: {
-      filename: 'data-aggregator-ext-es5.min.js',
+      filename: 'data-aggregator-es5.min.js',
       path: './dist'
     },
     module: {
@@ -45,7 +45,7 @@ if (env === 'production') {
   exportObj = {
     entry: './src/index.js',
     output: {
-      filename: 'data-aggregator-ext-es5.js',
+      filename: 'data-aggregator-es5.js',
       path: './dist'
     },
     module: {

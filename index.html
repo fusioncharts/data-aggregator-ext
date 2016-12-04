@@ -15,7 +15,7 @@
 <body>
   <script src="lib/fusioncharts.js" charset="utf-8"></script>
   <script src="lib/fusioncharts.timeseries.js" charset="utf-8"></script>
-  <script src="dist/data-aggregator-ext.min.js" charset="utf-8"></script>
+  <script src="dist/data-aggregator.min.js" charset="utf-8"></script>
   <div id="mainCont"></div>
   <div id="chart-container"></div>
   <script type="text/javascript">
@@ -137,21 +137,21 @@
 
                     },
                     extensions: {
-                      'data-aggregator-ext': {
+                      'data-aggregator': {
                         disabled: false,
                         position: 'top',
                         alignment: 'left',
                         layout: 'inline',
                         aggregate: {
-                          timeUnit: 'Month',
+                          timeUnit: 'month',
                           timeMultiplier: '3',
-                          method: 'Mean'
+                          method: 'mean'
                         },
                         orientation: 'horizontal',
                         styles: {
                           label: {
                             'font-size': 13,
-                            'font-family': '"Lucida Grande", "sans-serif"',
+                            'font-family': '"Lucida Grande", sans-serif',
                             'font-weight': 'normal',
                             'fill': '#4b4b4b',
                             'height': 22
@@ -285,7 +285,7 @@
                             font: {
                               'fontSize': 11,
                               // 'fontWeight': 'bold',
-                              'fontFamily': '"Lucida Grande", "sans-serif"'
+                              'fontFamily': '"Lucida Grande", sans-serif'
                               // 'fontStyle': 'italic'
                             }
                           }

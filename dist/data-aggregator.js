@@ -62,8 +62,8 @@
 	})(typeof window !== 'undefined' ? window : this, function (_window, windowExists) {
 	  var FC = _window.FusionCharts;
 
-	  FC.register('extension', ['private', 'data-aggregator-ext', function () {
-	    FC.registerComponent('extensions', 'data-aggregator-ext', AggregatorGetter({FC: FC}));
+	  FC.register('extension', ['private', 'data-aggregator', function () {
+	    FC.registerComponent('extensions', 'data-aggregator', AggregatorGetter({FC: FC}));
 	  }]);
 	});
 
@@ -75,6 +75,10 @@
 	'use strict';
 
 	module.exports = function (dep) {
+	  /**
+	   * Capitalize the first letter of a given string and return the string
+	   * @private
+	   */
 	  var capitalize = function (string) {
 	    return string.charAt(0).toUpperCase() + string.slice(1);
 	  };
@@ -281,8 +285,8 @@
 	      self.toolbars.push(self.createToolbar());
 
 	      composition.reactiveModel.onPropsChange(['bin-size', 'aggregation-fn'], function () {
-	        if (config.flag) {
-	          config.flag = false;
+	        if (config.execute) {
+	          config.execute = false;
 	          setTimeout(() => {
 	            self.rangeOnChange();
 	          }, 200);
@@ -416,7 +420,7 @@
 	      usrConfigStyle = config.usrConfig.styles || {
 	        label: {
 	          'font-size': 13,
-	          'font-family': '"Lucida Grande", "sans-serif"',
+	          'font-family': '"Lucida Grande", sans-serif',
 	          'font-weight': 'normal',
 	          'fill': '#4b4b4b',
 	          'height': 22
@@ -550,7 +554,7 @@
 	          font: {
 	            'fontSize': 11,
 	            // 'fontWeight': 'bold',
-	            'fontFamily': '"Lucida Grande", "sans-serif"'
+	            'fontFamily': '"Lucida Grande", sans-serif'
 	            // 'fontStyle': 'italic'
 	          }
 	        }
@@ -1079,7 +1083,7 @@
 
 	      aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
 	      aggMethodSelectMenu.value(aggregationMethod.value);
-	      config.flag = true;
+	      config.execute = true;
 	    }
 
 	    draw (x, y, width, height, group) {

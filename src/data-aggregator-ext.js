@@ -998,11 +998,12 @@ module.exports = function (dep) {
           toolbar = toolbars[i];
           toolbar.draw(x, y, group);
         }
+
+        config.defaultAggMethod = dataAgg.getDefaultAggregationMethod().nickName;
+        !config.drawn && self.apply(1);
+        self.rangeOnChange();
+        config.drawn = true;
       }
-      config.defaultAggMethod = dataAgg.getDefaultAggregationMethod().nickName;
-      !config.drawn && self.apply(1);
-      self.rangeOnChange();
-      config.drawn = true;
     }
 
     dispose () {

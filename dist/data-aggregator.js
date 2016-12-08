@@ -878,7 +878,7 @@
 	        if (!config.drawn) {
 	          timePeriodVal = aggregate.timeUnit && aggregate.timeUnit.toString().toLowerCase();
 	          timePeriodMultiplierVal = aggregate.timeMultiplier;
-	          aggMethod = aggregate.method && aggregate.method.toString().toLowerCase();
+	          aggMethod = aggregate.method && aggregate.method.toString();
 
 	          self.getValidAggregation();
 	          validTimePeriod = config.validTimePeriod;

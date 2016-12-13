@@ -159,16 +159,18 @@
 	        time,
 	        binSize,
 	        multiplier,
+	        globalReactiveModel = tsObject.globalReactiveModel,
+	        maximumAllowedTicks = globalReactiveModel.prop('x-axis-maximum-allowed-ticks'),
 	        minBinSize;
 
-	      config.currentTimeLength = tsObject.globalReactiveModel.model['x-axis-visible-range-end'] -
-	        tsObject.globalReactiveModel.model['x-axis-visible-range-start'];
+	      config.currentTimeLength = globalReactiveModel.model['x-axis-visible-range-end'] -
+	        globalReactiveModel.model['x-axis-visible-range-start'];
 
 	      avlTimePeriods = config.avlTimePeriods;
 	      avlTimeMultiplier = config.avlTimeMultiplier;
 	      currentTimeLength = config.currentTimeLength;
 
-	      config.minBinSize = minBinSize = currentTimeLength / maxNumOfPlot;
+	      minBinSize = currentTimeLength / maxNumOfPlot;
 
 	      config.validTimePeriod = [];
 	      config.validTimePeriodMultiplier = [];
@@ -183,7 +185,9 @@
 	          multiplier = avlTimeMultiplier[i][j];
 	          binSize = multiplier * time;
 
-	          if ((binSize >= minBinSize) && (binSize > minimumConsecutiveDifference)) {
+	          if ((binSize >= minBinSize) && (binSize > minimumConsecutiveDifference) &&
+	            // Need to revisit
+	            (currentTimeLength > maximumAllowedTicks * binSize * 0.5)) {
 	            multipliersArr.push(avlTimeMultiplier[i][j]);
 	          }
 	        }

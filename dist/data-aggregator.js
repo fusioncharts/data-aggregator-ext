@@ -80,8 +80,27 @@
 	   * @private
 	   */
 	  var capitalize = function (string) {
-	    return string.charAt(0).toUpperCase() + string.slice(1);
-	  };
+	      return string.charAt(0).toUpperCase() + string.slice(1);
+	    },
+	    isPlainObject = function (o) {
+	      return typeof o === 'object' && o.constructor === Object;
+	    },
+	    mergeRecursively = function recParsing (sink, source, lib) {
+	      var prop;
+	      for (prop in source) {
+	        if (prop in sink) {
+	          if (typeof source[prop] === 'object') {
+	            recParsing(sink[prop], source[prop], lib);
+	          }
+	        } else {
+	          if (isPlainObject(source[prop])) {
+	            sink[prop] = lib.extend2({}, source[prop]);
+	          } else {
+	            sink[prop] = source[prop];
+	          }
+	        }
+	      }
+	    };
 	  /**
 	   * Class representing the Data Aggregator.
 	   */
@@ -246,6 +265,8 @@
 	          'chartInstance',
 	          'smartLabel',
 	          'extData',
+	          'parentGroup',
+	          'lib',
 	          function acquire () {
 	            let i = 0,
 	              ii = requiredParams.length - 1,
@@ -314,27 +335,19 @@
 	        toolboxCompConfig = toolboxComponent.config,
 	        HorizontalToolbar = toolbox.HorizontalToolbar,
 	        ComponentGroup = toolbox.ComponentGroup,
-	        SymbolStore = toolbox.SymbolStore,
 
 	        graphics = tsObject.graphics,
 	        paper = graphics.paper,
+	        d3 = paper.getInstances().d3,
 	        container = graphics.container,
 	        chart = tsObject.chart,
 	        smartLabel = tsObject.smartLabel,
 
 	        multiplierVal,
 	        timeMulSelectMenuOpt,
-	        dropDownMenuStyle,
-	        applyButtonDisableConfig,
-	        resetButtonDisableConfig,
-	        displayListAt,
 
 	        usrConfig,
-	        position,
-	        alignment,
-
 	        style,
-	        usrConfigStyle,
 
 	        dependencies = {
 	          paper: paper,
@@ -382,16 +395,15 @@
 	         */
 	        onChange = (type) => {
 	          var currentAgg = self.getCurrentAggreation();
-
 	          currentAgg.timePeriodMultiplier = currentAgg.timePeriodMultiplier &&
 	            currentAgg.timePeriodMultiplier.toString();
 
 	          if (currentAgg.timePeriodMultiplier !== timeMulSelectMenu.value() ||
 	            currentAgg.timePeriod !== timePeriodSelectMenu.value() ||
 	            currentAgg.aggregationMethod.value !== aggMethodSelectMenu.value()) {
-	            applyButton.updateVisual('enabled');
+	            applyButton.removeState('disabled');
 	          } else {
-	            applyButton.updateVisual('disabled');
+	            applyButton.setState('disabled');
 	          }
 
 	          if (!aggMethodSelectMenu.value()) {
@@ -414,356 +426,356 @@
 	      });
 
 	      toolbar = new HorizontalToolbar(dependencies);
-
 	      usrConfig = config.usrConfig;
-	      position = usrConfig.position || 'bottom';
-	      alignment = usrConfig.alignment || 'right';
 
-	      if (position === 'top' || alignment === 'top') {
-	        displayListAt = 'bottom';
-	      } else if (position === 'bottom' || alignment === 'bottom') {
-	        displayListAt = 'top';
-	      }
-
-	      usrConfigStyle = usrConfig.styles || {
-	        label: {
-	          'font-size': 13,
-	          'font-family': '"Lucida Grande", sans-serif',
-	          'font-weight': 'normal',
-	          'fill': '#4b4b4b',
-	          'height': 22
-	        },
-	        timeMultiplierInputField: {
-	          active: {
-	            'fill': '#fff',
-	            'labelFill': '#696969',
-	            'stroke': '#c8cecd',
-	            'strokeWidth': 1,
-	            'radius': 1,
-	            // 'displayListAt': 'top',
-	            'shadow': {
-	              'fill': '#000',
-	              'opacity': 0.35
-	            },
-	            'width': 50,
-	            'height': 22
-	          }
-	        },
-	        timePeriodInputField: {
-	          active: {
-	            'fill': '#fff',
-	            'labelFill': '#696969',
-	            'stroke': '#c8cecd',
-	            'strokeWidth': 1,
-	            'radius': 1,
-	            // 'displayListAt': 'top',
-	            'shadow': {
-	              'fill': '#000',
-	              'opacity': 0.35
-	            },
-	            'width': 90,
-	            'height': 22
-	          }
-	        },
-	        aggregationMethodInputField: {
-	          active: {
-	            'fill': '#fff',
-	            'labelFill': '#696969',
-	            'stroke': '#c8cecd',
-	            'strokeWidth': 1,
-	            'radius': 1,
-	            // 'displayListAt': 'top',
-	            'shadow': {
-	              'fill': '#000',
-	              'opacity': 0.35
-	            },
-	            'width': 100,
-	            'height': 22
-	          }
-	        },
-	        dropDown: {
-	          active: {
-	            'fill': '#898b8b',
-	            'labelFill': '#fff'
-	          },
-	          normal: {
-	            'fill': '#fff',
-	            'stroke': '#898b8b',
-	            'radius': 2,
-	            'labelFill': '#000',
-	            'hoverFill': '#e6e8e8',
-	            'hoverLabelFill': '#696969'
-	          }
-	        },
-	        applyButton: {
-	          active: {
-	            'fill': '#555',
-	            'labelFill': '#f3f3f3',
-	            'stroke': '#ced5d4',
-	            'strokeWidth': 0,
-	            'hoverFill': '#555',
-	            'hoverStrokeWidth': 0,
-	            'hoverStroke': '',
-	            'radius': 1,
-	            'shadow': {
-	              'fill': '#000',
-	              'opacity': 0.35
-	            },
-	            'width': 54,
-	            'height': 22
-	          },
-	          inactive: {
-	            'fill': '#bebebe',
-	            'stroke-width': 0,
-	            'stroke': '#ced5d4',
-	            'labelFill': '#f3f3f3'
-	          }
-	        },
-	        resetButton: {
-	          active: {
-	            'fill': '#898b8b',
-	            'labelFill': '#f3f3f3',
-	            'stroke': '#ced5d4',
-	            'strokeWidth': 0,
-	            'hoverFill': '#898b8b',
-	            'hoverStrokeWidth': 0,
-	            'hoverStroke': '',
-	            'radius': 1,
-	            'shadow': {
-	              'fill': '#000',
-	              'opacity': 0.35
-	            },
-	            'width': 54,
-	            'height': 22
-	          },
-	          inactive: {
-	            'fill': '#bebebe',
-	            'stroke-width': 0,
-	            'stroke': '#ced5d4',
-	            'labelFill': '#f3f3f3'
-	          }
-	        },
-	        base: {
-	          font: {
-	            'fontSize': 11,
-	            // 'fontWeight': 'bold',
-	            'fontFamily': '"Lucida Grande", sans-serif'
-	            // 'fontStyle': 'italic'
-	          }
-	        }
-	      };
-
-	      style = usrConfigStyle || {};
-
-	      style = {
-	        label: style.label || {},
-	        timeMultiplierInputField: {
-	          active: (style.timeMultiplierInputField && style.timeMultiplierInputField.active) || {}
-	        },
-	        timePeriodInputField: {
-	          active: (style.timePeriodInputField && style.timePeriodInputField.active) || {}
-	        },
-	        aggregationMethodInputField: {
-	          active: (style.aggregationMethodInputField && style.aggregationMethodInputField.active) || {}
-	        },
-	        dropDown: {
-	          active: (style.dropDown && style.dropDown.active) || {},
-	          normal: (style.dropDown && style.dropDown.normal) || {}
-	        },
-	        applyButton: {
-	          active: (style.applyButton && style.applyButton.active) || {},
-	          inactive: (style.applyButton && style.applyButton.inactive) || {}
-	        },
-	        resetButton: {
-	          active: (style.resetButton && style.resetButton.active) || {},
-	          inactive: (style.resetButton && style.resetButton.inactive) || {}
-	        },
-	        base: {
-	          font: (style.base && style.base.font) || {}
-	        }
-	      };
-
-	      labelGroup.setConfig({
-	        fill: '#fff',
-	        borderThickness: 0
-	      });
-	      selectMenuGroup.setConfig({
-	        fill: '#fff',
-	        borderThickness: 0
-	      });
-	      buttonGroup.setConfig({
-	        fill: '#fff',
-	        borderThickness: 0
-	      });
-
-	      toolbar.setConfig({
-	        fill: '#fff',
-	        borderThickness: 0
-	      });
-
-	      applyButtonDisableConfig = {
-	        disabled: {
-	          config: {
-	            disabled: style.applyButton.inactive
-	          }
-	        }
-	      };
-
-	      resetButtonDisableConfig = {
-	        disabled: {
-	          config: {
-	            disabled: style.resetButton.inactive
-	          }
-	        }
-	      };
-
-	      dropDownMenuStyle = {
-	        selected: {
-	          container: {
-	            style: {
-	              fill: style.dropDown.active.fill
-	            }
-	          },
-	          text: {
-	            style: {
-	              fill: style.dropDown.active.labelFill
-	            }
-	          }
-	        },
-	        normal: {
-	          container: {
-	            style: {
-	              fill: style.dropDown.normal.fill,
-	              stroke: style.dropDown.normal.stroke,
-	              radius: style.dropDown.normal.radius
-	            }
-	          },
-	          text: {
-	            style: {
-	              fill: style.dropDown.normal.labelFill
-	            }
-	          }
-	        },
-	        hover: {
-	          container: {
-	            style: {
-	              fill: style.dropDown.normal.hoverFill
-	            }
-	          },
-	          text: {
-	            style: {
-	              fill: style.dropDown.normal.hoverLabelFill
-	            }
-	          }
-	        }
-	      };
-
-	      label = new toolbox.Label('Aggregate Data:', dependencies, {
+	      var selectConf = {
 	        container: {
-	          height: style.label.height
+	          style: {
+	            'fill': '#fff',
+	            'stroke': '#c8cecd',
+	            'stroke-width': '1'
+	          },
+	          states: {
+	            selected: {
+	              stroke: '#1e1f1f'
+	            },
+	            hover: {
+	              cursor: 'pointer'
+	            }
+	          }
 	        },
 	        text: {
-	          style: style.label
+	          style: {
+	            fill: '#696969',
+	            'fontSize': '11px',
+	            'fontFamily': '"Lucida Grande", sans-serif'
+	          }
+	        },
+	        arrow: {
+	          style: {
+	            fill: '#696969'
+	          }
+	        },
+	        attrs: {
+	          'radius': 2,
+	          'width': 50,
+	          'height': 22,
+	          'margin': {
+	            right: 3
+	          }
 	        }
+	      };
+
+	      var defaultStyle = {
+	        label: {
+	          container: {
+	            height: 22,
+	            style: {
+
+	            }
+	          },
+	          text: {
+	            style: {
+	              'font-size': 13,
+	              'font-family': '"Lucida Grande", sans-serif',
+	              'font-weight': 'normal',
+	              'fill': '#4b4b4b'
+	            }
+	          }
+	        },
+	        timeMulSelectMenu: {
+	          container: selectConf.container,
+	          text: selectConf.text,
+	          arrow: selectConf.arrow,
+	          attrs: {
+	            'radius': 2,
+	            'width': 50,
+	            'height': 22,
+	            'margin': {
+	              right: 3
+	            }
+	          },
+	          eventListeners: [{
+	            type: 'change',
+	            cb: onChange
+	          }]
+	        },
+	        timePeriodSelectMenu: {
+	          container: selectConf.container,
+	          text: selectConf.text,
+	          arrow: selectConf.arrow,
+	          attrs: {
+	            'radius': 2,
+	            'width': 90,
+	            'height': 22,
+	            'margin': {
+	              right: 8
+	            }
+	          },
+	          eventListeners: [{
+	            type: 'change',
+	            cb: function () {
+	              timePeriodOnChange();
+	              onChange();
+	            }
+	          }]
+	        },
+	        aggMethodSelectMenu: {
+	          container: selectConf.container,
+	          text: selectConf.text,
+	          arrow: selectConf.arrow,
+	          attrs: {
+	            'radius': 2,
+	            'width': 100,
+	            'height': 22,
+	            margin: {
+	              right: 11
+	            }
+	          },
+	          eventListeners: [{
+	            type: 'change',
+	            cb: onChange
+	          }]
+	        },
+	        dropDown: {
+	          container: {
+	            style: {
+	              background: '#fff',
+	              'border-color': '#898b8b',
+	              'border-radius': '1px',
+	              'border-style': 'solid',
+	              'border-width': '2px',
+	              'font-size': '11px',
+	              'font-family': '"Lucida Grande", sans-serif'
+	            }
+	          },
+	          listItem: {
+	            style: {
+	            },
+	            states: {
+	              hover: {
+	                className: undefined,
+	                style: {
+	                  'background': '#e6e8e8',
+	                  'color': '#696969',
+	                  'cursor': 'pointer'
+	                }
+	              },
+	              selected: {
+	                className: undefined,
+	                style: {
+	                  'background': '#898b8b',
+	                  'color': '#fff'
+	                }
+	              }
+	            }
+	          }
+	        },
+	        applyButton: {
+	          container: {
+	            style: {
+	              'fill': '#555',
+	              'stroke': '#ced5d4',
+	              'stroke-width': 0
+	            },
+	            states: {
+	              disabled: {
+	                'fill': '#bebebe',
+	                'stroke-width': 0,
+	                'stroke': '#ced5d4'
+	              }
+	            }
+	          },
+	          text: {
+	            style: {
+	              'fill': '#f3f3f3',
+	              'fontSize': '11px',
+	              'fontFamily': '"Lucida Grande", sans-serif'
+	            },
+	            states: {
+	              hover: {
+	                'fill': '#555',
+	                'stroke-width': 0,
+	                'stroke': ''
+	              },
+	              disabled: {
+	                'fill': '#f3f3f3'
+	              }
+	            }
+	          },
+	          attrs: {
+	            'radius': 1,
+	            'width': 54,
+	            'height': 22,
+	            margin: {
+	              right: 3
+	            },
+	            label: 'APPLY'
+	          },
+	          eventListeners: [{
+	            type: 'click',
+	            cb: function () {
+	              self.apply(1);
+	            }
+	          }]
+	        },
+	        resetButton: {
+	          container: {
+	            style: {
+	              'fill': '#898b8b',
+	              'stroke': '#ced5d4',
+	              'strokeWidth': 0
+	            },
+	            states: {
+	              hover: {
+	                cursor: 'pointer'
+	              },
+	              disabled: {
+	                'fill': '#bebebe',
+	                'stroke-width': 0,
+	                'stroke': '#ced5d4',
+	                cursor: 'default'
+	              }
+	            }
+	          },
+	          text: {
+	            style: {
+	              fill: '#f3f3f3',
+	              'fontSize': '11px',
+	              'fontFamily': '"Lucida Grande", sans-serif'
+	            },
+	            states: {
+	              disabled: {
+	                fill: '#f3f3f3'
+	              }
+	            }
+	          },
+	          attrs: {
+	            'radius': 1,
+	            'shadow': {
+	              'fill': '#000',
+	              'opacity': 0.35
+	            },
+	            'width': 54,
+	            'height': 22,
+	            margin: {
+	              right: 3
+	            },
+	            label: 'RESET'
+	          },
+	          eventListeners: [{
+	            type: 'click',
+	            cb: function () {
+	              self.apply(0);
+	            }
+	          }]
+	        }
+	      };
+
+	      style = defaultStyle;
+
+	      if (usrConfig.styles) {
+	        mergeRecursively(usrConfig.styles, defaultStyle, this.tsObject.lib);
+	        style = usrConfig.styles;
+	      }
+
+	      label = new toolbox.Label('Aggregate Data:', dependencies, style.label);
+
+	      label.setConfig({
+	        className: style.label.className
 	      });
 
-	      toolboxCompConfig.timePeriodSelectMenu = timePeriodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
-	      Object.assign(style.timePeriodInputField.active, {
-	        btnTextStyle: style.base.font,
-	        dropDownMenu: dropDownMenuStyle,
-	        displayListAt: style.timePeriodInputField.active.displayListAt || displayListAt,
-	        margin: {
-	          right: 8
+	      applyClassName(label.getIndividualClassNames(label.getClassName()), 'label');
+
+	      var parentGroup = tsObject.parentGroup;
+	      var count = 0;
+
+	      function applyClassName (obj, prop, state) {
+	        var _style;
+	        for (var key in obj) {
+	          if (style[prop][key]) {
+	            if (state && style[prop][key].states && style[prop][key].states[state]) {
+	              _style = style[prop][key].states[state];
+	            } else {
+	              _style = style[prop][key].style;
+	            }
+	          }
+	          _style && paper.cssAddRule('.' + obj[key], _style);
 	        }
-	      }));
+	      }
 
-	      toolboxCompConfig.timeMulSelectMenu = timeMulSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
-	      Object.assign(style.timeMultiplierInputField.active, {
-	        btnTextStyle: style.base.font,
-	        dropDownMenu: dropDownMenuStyle,
-	        displayListAt: style.timeMultiplierInputField.active.displayListAt || displayListAt,
-	        margin: {
-	          right: 3
+	      function factory (prop, cb, options) {
+	        var sm = toolboxCompConfig[prop] = cb(options)
+	        .setConfig(style[prop].attrs);
+
+	        sm.setParentGroup(parentGroup);
+	        console.log(style[prop].className);
+	        sm.setConfig({
+	          className: style[prop].className
+	        });
+
+	        sm.namespace('fusioncharts');
+	        sm.appendSelector('ext1-' + (count++));
+
+	        applyClassName(sm.getIndividualClassNames(sm.getClassName()), prop);
+	        var classNames = sm.config.states;
+	        for (var key in classNames) {
+	          applyClassName(sm.getIndividualClassNames(classNames[key]), prop, key);
 	        }
-	      }));
 
-	      toolboxCompConfig.aggMethodSelectMenu = aggMethodSelectMenu = new toolbox.SelectSymbol({}, dependencies, [],
-	      Object.assign(style.aggregationMethodInputField.active, {
-	        btnTextStyle: style.base.font,
-	        displayListAt: style.aggregationMethodInputField.active.displayListAt || displayListAt,
-	        margin: {
-	          right: 11
-	        },
-	        dropDownMenu: dropDownMenuStyle
-	      }));
+	        var dm = sm.config.dropDownMenu;
+	        for (var components in dm) {
+	          var component = dm[components];
+	          switch (components) {
+	            case 'container':
+	              paper.cssAddRule('.' + component.className, style.dropDown.container.style);
+	              break;
+	            case 'listItem':
+	              paper.cssAddRule('.' + component.className, style.dropDown.listItem.style);
+	              var states = component.states;
+	              for (var state in states) {
+	                paper.cssAddRule('.' + states[state], style.dropDown.listItem.states[state].style);
+	              }
+	              break;
+	          }
+	        }
 
-	      toolboxCompConfig.applyButton = applyButton = new toolbox.Symbol('APPLY', true, dependencies,
-	        Object.assign(style.applyButton.active, {
-	          btnTextStyle: style.base.font,
-	          margin: {
-	            right: 3
-	          }
-	        }))
-	        .attachEventHandlers({
-	          click: function () {
-	            self.apply(1);
-	          }
-	        });
-	      applyButton.setStateConfig(applyButtonDisableConfig);
+	        var eventListeners = style[prop].eventListeners;
+	        for (var i = 0, len = eventListeners.length; i < len; i += 1) {
+	          var event = eventListeners[i];
+	          var obj = {};
+	          obj[event.type] = event.cb;
+	          sm.attachEventHandlers(obj);
+	        }
+	        return sm;
+	      }
 
-	      toolboxCompConfig.resetButton = resetButton = new toolbox.Symbol('RESET', true, dependencies,
-	        Object.assign(style.resetButton.active, {
-	          btnTextStyle: style.base.font,
-	          margin: {
-	            right: 3
-	          }
-	        }))
-	        .attachEventHandlers({
-	          click: function () {
-	            self.apply(0);
-	          }
-	        });
-	      resetButton.setStateConfig(resetButtonDisableConfig);
+	      function createSelectButton (prop) {
+	        return factory(prop, d3.selectButton, []);
+	      }
+
+	      function createButton (prop) {
+	        return factory(prop, d3.button, style[prop].attrs.label);
+	      }
 
 	      labelGroup.addSymbol(label);
+
+	      timeMulSelectMenu = createSelectButton('timeMulSelectMenu');
+	      timePeriodSelectMenu = createSelectButton('timePeriodSelectMenu');
+	      aggMethodSelectMenu = createSelectButton('aggMethodSelectMenu');
+
+	      applyButton = createButton('applyButton');
+	      resetButton = createButton('resetButton');
+
 	      selectMenuGroup.addSymbol(timeMulSelectMenu);
 	      selectMenuGroup.addSymbol(timePeriodSelectMenu);
 	      selectMenuGroup.addSymbol(aggMethodSelectMenu);
 	      buttonGroup.addSymbol(applyButton);
 	      buttonGroup.addSymbol(resetButton);
 
-	      SymbolStore.register('textBoxIcon', function (x, y, rad, w, h, padX, padY) {
-	        var x1 = x - w / 2 + padX / 2,
-	          x2 = x + w / 2 - padX / 2,
-	          y1 = y - h / 2 + padY / 2,
-	          y2 = y + h / 2 - padY / 2;
-
-	        return ['M', x1, y1, 'L', x2, y1, 'L', x2, y2, 'L', x1, y2, 'Z'];
-	      });
-
-	      timePeriodSelectMenu.attachEventHandlers({
-	        textOnChange: function () {
-	          timePeriodOnChange();
-	          onChange();
-	        }
-	      });
-
-	      timeMulSelectMenu.attachEventHandlers({
-	        textOnChange: function () {
-	          onChange();
-	        }
-	      });
-
-	      aggMethodSelectMenu.attachEventHandlers({
-	        textOnChange: function () {
-	          onChange();
-	        }
-	      });
-
 	      toolbar.addComponent(labelGroup);
 	      toolbar.addComponent(selectMenuGroup);
 	      toolbar.addComponent(buttonGroup);
-
 	      return toolbar;
 	    }
 
@@ -924,8 +936,8 @@
 	                .unlock();
 	              aggregation.aggregationMethod = aggMethod;
 	            }
-	            applyButton.updateVisual('disabled');
-	            resetButton.updateVisual('enabled');
+	            applyButton.setState('disabled');
+	            resetButton.removeState('disabled');
 	          }
 	        } else {
 	          timePeriodVal = timePeriodSelectMenu.value();
@@ -946,14 +958,14 @@
 	            .unlock();
 	          aggregation.binSize = binSize;
 	          aggregation.aggregationMethod = aggMethod;
-	          applyButton.updateVisual('disabled');
-	          resetButton.updateVisual('enabled');
+	          applyButton.setState('disabled');
+	          resetButton.removeState('disabled');
 	        }
 	      } else {
 	        canvas.resetAggregation();
 	        aggregation.binSize = null;
 	        aggregation.aggregationMethod = null;
-	        resetButton.updateVisual('disabled');
+	        resetButton.setState('disabled');
 	      }
 	    }
 
@@ -1005,15 +1017,15 @@
 	      validTimePeriodMultiplier = config.validTimePeriodMultiplier;
 	      avlAggMethods = config.avlAggMethods;
 
-	      applyButton.updateVisual('disabled');
+	      applyButton.setState('disabled');
 
 	      if (aggregation.binSize !== model.prop('bin-size') &&
 	        (aggregationMethod.value === config.defaultAggMethod || !aggregationMethod.value)) {
 	        aggregation.binSize = null;
 	        aggregation.aggregationMethod = null;
-	        resetButton.updateVisual('disabled');
+	        resetButton.setState('disabled');
 	      } else {
-	        resetButton.updateVisual('enabled');
+	        resetButton.removeState('disabled');
 	      }
 
 	      for (timePeriodVal of validTimePeriod) {
@@ -1022,7 +1034,6 @@
 	          value: timePeriodVal
 	        });
 	      }
-
 	      timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
 	      timePeriod ? timePeriodSelectMenu.value(timePeriod) : timePeriodSelectMenu.setPlaceHolderValue('');
 

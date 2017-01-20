@@ -709,7 +709,6 @@
 	        .setConfig(style[prop].attrs);
 
 	        sm.setParentGroup(parentGroup);
-	        console.log(style[prop].className);
 	        sm.setConfig({
 	          className: style[prop].className
 	        });

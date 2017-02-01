@@ -483,8 +483,8 @@
 	          text: {
 	            style: {
 	              fill: '#696969',
-	              'fontSize': '11px',
-	              'fontFamily': '"Lucida Grande", sans-serif'
+	              'font-size': '11px',
+	              'font-family': '"Lucida Grande", sans-serif'
 	            }
 	          },
 	          arrow: {
@@ -508,11 +508,14 @@
 	              height: 22,
 	              style: {}
 	            },
+	            margin: {
+	              right: 2
+	            },
 	            text: {
 	              style: {
-	                'font-size': 13,
+	                'font-size': '13px',
 	                'font-family': '"Lucida Grande", sans-serif',
-	                'font-weight': 'normal',
+	                'font-weight': 'bold',
 	                'fill': '#4b4b4b'
 	              }
 	            }
@@ -526,7 +529,12 @@
 	              'width': 50,
 	              'height': 22,
 	              'margin': {
-	                right: 3
+	                right: 3,
+	                left: 0
+	              },
+	              padding: {
+	                left: 10,
+	                right: 8
 	              }
 	            },
 	            eventListeners: [{
@@ -543,6 +551,11 @@
 	              'width': 90,
 	              'height': 22,
 	              'margin': {
+	                right: 9,
+	                left: 0
+	              },
+	              padding: {
+	                left: 10,
 	                right: 8
 	              }
 	            },
@@ -563,7 +576,12 @@
 	              'width': 100,
 	              'height': 22,
 	              margin: {
-	                right: 11
+	                right: 8,
+	                left: 0
+	              },
+	              padding: {
+	                left: 10,
+	                right: 8
 	              }
 	            },
 	            eventListeners: [{
@@ -616,6 +634,9 @@
 	                  'fill': '#bebebe',
 	                  'stroke-width': 0,
 	                  'stroke': '#ced5d4'
+	                },
+	                hover: {
+	                  cursor: 'pointer'
 	                }
 	              }
 	            },
@@ -626,11 +647,6 @@
 	                'fontFamily': '"Lucida Grande", sans-serif'
 	              },
 	              states: {
-	                hover: {
-	                  'fill': '#555',
-	                  'stroke-width': 0,
-	                  'stroke': ''
-	                },
 	                disabled: {
 	                  'fill': '#f3f3f3'
 	                }
@@ -641,7 +657,8 @@
 	              'width': 54,
 	              'height': 22,
 	              margin: {
-	                right: 3
+	                right: 3,
+	                left: 0
 	              },
 	              label: 'APPLY'
 	            },
@@ -692,7 +709,8 @@
 	              'width': 54,
 	              'height': 22,
 	              margin: {
-	                right: 3
+	                right: 3,
+	                left: 0
 	              },
 	              label: 'RESET'
 	            },
@@ -712,7 +730,7 @@
 	          style = usrConfig.styles;
 	        }
 
-	        label = new toolbox.Label('Aggregate Data:', dependencies, style.label);
+	        label = new toolbox.Label('Aggregation: ', dependencies, style.label);
 
 	        label.setConfig({
 	          className: style.label.className
@@ -790,6 +808,11 @@
 	        }
 
 	        labelGroup.addSymbol(label);
+	        labelGroup.setConfig({
+	          margin: {
+	            right: 0
+	          }
+	        });
 
 	        timeMulSelectMenu = createSelectButton('timeMulSelectMenu');
 	        timePeriodSelectMenu = createSelectButton('timePeriodSelectMenu');

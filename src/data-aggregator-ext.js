@@ -373,8 +373,8 @@ module.exports = function (dep) {
         text: {
           style: {
             fill: '#696969',
-            'fontSize': '11px',
-            'fontFamily': '"Lucida Grande", sans-serif'
+            'font-size': '11px',
+            'font-family': '"Lucida Grande", sans-serif'
           }
         },
         arrow: {
@@ -400,11 +400,14 @@ module.exports = function (dep) {
 
             }
           },
+          margin: {
+            right: 2
+          },
           text: {
             style: {
-              'font-size': 13,
+              'font-size': '13px',
               'font-family': '"Lucida Grande", sans-serif',
-              'font-weight': 'normal',
+              'font-weight': 'bold',
               'fill': '#4b4b4b'
             }
           }
@@ -418,7 +421,12 @@ module.exports = function (dep) {
             'width': 50,
             'height': 22,
             'margin': {
-              right: 3
+              right: 3,
+              left: 0
+            },
+            padding: {
+              left: 10,
+              right: 8
             }
           },
           eventListeners: [{
@@ -435,6 +443,11 @@ module.exports = function (dep) {
             'width': 90,
             'height': 22,
             'margin': {
+              right: 9,
+              left: 0
+            },
+            padding: {
+              left: 10,
               right: 8
             }
           },
@@ -455,7 +468,12 @@ module.exports = function (dep) {
             'width': 100,
             'height': 22,
             margin: {
-              right: 11
+              right: 8,
+              left: 0
+            },
+            padding: {
+              left: 10,
+              right: 8
             }
           },
           eventListeners: [{
@@ -509,6 +527,9 @@ module.exports = function (dep) {
                 'fill': '#bebebe',
                 'stroke-width': 0,
                 'stroke': '#ced5d4'
+              },
+              hover: {
+                cursor: 'pointer'
               }
             }
           },
@@ -519,11 +540,6 @@ module.exports = function (dep) {
               'fontFamily': '"Lucida Grande", sans-serif'
             },
             states: {
-              hover: {
-                'fill': '#555',
-                'stroke-width': 0,
-                'stroke': ''
-              },
               disabled: {
                 'fill': '#f3f3f3'
               }
@@ -534,7 +550,8 @@ module.exports = function (dep) {
             'width': 54,
             'height': 22,
             margin: {
-              right: 3
+              right: 3,
+              left: 0
             },
             label: 'APPLY'
           },
@@ -585,7 +602,8 @@ module.exports = function (dep) {
             'width': 54,
             'height': 22,
             margin: {
-              right: 3
+              right: 3,
+              left: 0
             },
             label: 'RESET'
           },
@@ -605,7 +623,7 @@ module.exports = function (dep) {
         style = usrConfig.styles;
       }
 
-      label = new toolbox.Label('Aggregate Data:', dependencies, style.label);
+      label = new toolbox.Label('Aggregation: ', dependencies, style.label);
 
       label.setConfig({
         className: style.label.className
@@ -684,6 +702,11 @@ module.exports = function (dep) {
       }
 
       labelGroup.addSymbol(label);
+      labelGroup.setConfig({
+        margin: {
+          right: 0
+        }
+      });
 
       timeMulSelectMenu = createSelectButton('timeMulSelectMenu');
       timePeriodSelectMenu = createSelectButton('timePeriodSelectMenu');

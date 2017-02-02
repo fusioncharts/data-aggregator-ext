@@ -229,9 +229,9 @@
 	            multiplier = avlTimeMultiplier[i][j];
 	            binSize = multiplier * time;
 
-	            if (binSize >= minBinSize && binSize > minimumConsecutiveDifference &&
-	            // Need to revisit
-	            currentTimeLength > maximumAllowedTicks * binSize * 0.5) {
+	            if (binSize >= minBinSize && binSize > minimumConsecutiveDifference) {
+	              // Need to revisit
+	              // && (currentTimeLength > maximumAllowedTicks * binSize * 0.5)) {
 	              multipliersArr.push(avlTimeMultiplier[i][j]);
 	            }
 	          }

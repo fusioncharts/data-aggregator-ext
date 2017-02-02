@@ -125,6 +125,53 @@
 	      }
 	    }
 	  };
+	  // https://tc39.github.io/ecma262/#sec-array.prototype.includes
+	  if (!Array.prototype.includes) {
+	    Object.defineProperty(Array.prototype, 'includes', {
+	      value: function value(searchElement, fromIndex) {
+	        // 1. Let O be ? ToObject(this value).
+	        if (this == null) {
+	          throw new TypeError('"this" is null or not defined');
+	        }
+
+	        var o = Object(this);
+
+	        // 2. Let len be ? ToLength(? Get(O, "length")).
+	        var len = o.length >>> 0;
+
+	        // 3. If len is 0, return false.
+	        if (len === 0) {
+	          return false;
+	        }
+
+	        // 4. Let n be ? ToInteger(fromIndex).
+	        //    (If fromIndex is undefined, this step produces the value 0.)
+	        var n = fromIndex | 0;
+
+	        // 5. If n ≥ 0, then
+	        //  a. Let k be n.
+	        // 6. Else n < 0,
+	        //  a. Let k be len + n.
+	        //  b. If k < 0, let k be 0.
+	        var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+	        // 7. Repeat, while k < len
+	        while (k < len) {
+	          // a. Let elementK be the result of ? Get(O, ! ToString(k)).
+	          // b. If SameValueZero(searchElement, elementK) is true, return true.
+	          // c. Increase k by 1.
+	          // NOTE: === provides the correct "SameValueZero" comparison needed here.
+	          if (o[k] === searchElement) {
+	            return true;
+	          }
+	          k++;
+	        }
+
+	        // 8. Return false
+	        return false;
+	      }
+	    });
+	  }
 	  /**
 	   * Class representing the Data Aggregator.
 	   */
@@ -361,7 +408,6 @@
 	            container = graphics.container,
 	            chart = tsObject.chart,
 	            smartLabel = tsObject.smartLabel,
-	            multiplierVal,
 	            timeMulSelectMenuOpt,
 	            usrConfig,
 	            style,
@@ -384,38 +430,23 @@
 	              validTimePeriod = config.validTimePeriod,
 	              validTimePeriodMultiplier = config.validTimePeriodMultiplier,
 	              indexOfTimeUnit,
-	              indexOfTimeMul;
+	              indexOfTimeMul,
+	              multiplierVal,
+	              len,
+	              arr,
+	              i = 0;
 
 	          indexOfTimeUnit = validTimePeriod.indexOf(timePeriodVal);
 	          indexOfTimeMul = validTimePeriodMultiplier[indexOfTimeUnit].indexOf(Number(timePeriodMultiplierVal));
 
 	          timeMulSelectMenuOpt = [];
-	          var _iteratorNormalCompletion = true;
-	          var _didIteratorError = false;
-	          var _iteratorError = undefined;
-
-	          try {
-	            for (var _iterator = validTimePeriodMultiplier[indexOfTimeUnit][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	              multiplierVal = _step.value;
-
-	              timeMulSelectMenuOpt.push({
-	                name: multiplierVal.toString(),
-	                value: multiplierVal.toString()
-	              });
-	            }
-	          } catch (err) {
-	            _didIteratorError = true;
-	            _iteratorError = err;
-	          } finally {
-	            try {
-	              if (!_iteratorNormalCompletion && _iterator.return) {
-	                _iterator.return();
-	              }
-	            } finally {
-	              if (_didIteratorError) {
-	                throw _iteratorError;
-	              }
-	            }
+	          arr = validTimePeriodMultiplier[indexOfTimeUnit];
+	          for (i = 0, len = arr.length; i < len; i++) {
+	            multiplierVal = arr[i];
+	            timeMulSelectMenuOpt.push({
+	              name: multiplierVal.toString(),
+	              value: multiplierVal.toString()
+	            });
 	          }
 
 	          timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
@@ -945,6 +976,9 @@
 	            binSize,
 	            timeInterval,
 	            aggregation = self.aggregation,
+	            arr,
+	            i,
+	            len,
 	            canvas = config.composition.impl;
 
 	        if (set) {
@@ -972,34 +1006,14 @@
 
 	            if (validTimeBin || validMethod) {
 	              if (validTimeBin) {
-	                var _iteratorNormalCompletion2 = true;
-	                var _didIteratorError2 = false;
-	                var _iteratorError2 = undefined;
-
-	                try {
-	                  for (var _iterator2 = config.avlTimePeriods[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	                    keys = _step2.value;
-
-	                    if (keys.name === timePeriodVal) {
-	                      timeInterval = keys.interval;
-	                      break;
-	                    }
-	                  }
-	                } catch (err) {
-	                  _didIteratorError2 = true;
-	                  _iteratorError2 = err;
-	                } finally {
-	                  try {
-	                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	                      _iterator2.return();
-	                    }
-	                  } finally {
-	                    if (_didIteratorError2) {
-	                      throw _iteratorError2;
-	                    }
+	                arr = config.avlTimePeriods;
+	                for (i = 0, len = arr.length; i < len; i++) {
+	                  keys = arr[i];
+	                  if (keys.name === timePeriodVal) {
+	                    timeInterval = keys.interval;
+	                    break;
 	                  }
 	                }
-
 	                binSize = timeInterval * Number(timePeriodMultiplierVal);
 	                model.lock().prop('bin-size-ext', binSize).unlock();
 	                aggregation.binSize = binSize;
@@ -1016,35 +1030,14 @@
 	            timePeriodVal = timePeriodSelectMenu.value();
 	            timePeriodMultiplierVal = timeMulSelectMenu.value();
 	            aggMethod = aggMethodSelectMenu.value();
-
-	            var _iteratorNormalCompletion3 = true;
-	            var _didIteratorError3 = false;
-	            var _iteratorError3 = undefined;
-
-	            try {
-	              for (var _iterator3 = config.avlTimePeriods[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-	                keys = _step3.value;
-
-	                if (keys.name === timePeriodVal) {
-	                  timeInterval = keys.interval;
-	                  break;
-	                }
-	              }
-	            } catch (err) {
-	              _didIteratorError3 = true;
-	              _iteratorError3 = err;
-	            } finally {
-	              try {
-	                if (!_iteratorNormalCompletion3 && _iterator3.return) {
-	                  _iterator3.return();
-	                }
-	              } finally {
-	                if (_didIteratorError3) {
-	                  throw _iteratorError3;
-	                }
+	            arr = config.avlTimePeriods;
+	            for (i = 0, len = arr.length; i < len; i++) {
+	              keys = arr[i];
+	              if (keys.name === timePeriodVal) {
+	                timeInterval = keys.interval;
+	                break;
 	              }
 	            }
-
 	            binSize = timeInterval * Number(timePeriodMultiplierVal);
 	            model.lock().prop('bin-size-ext', binSize).prop('aggregation-fn-ext', config.avlAggMethods[aggMethod]).unlock();
 	            aggregation.binSize = binSize;
@@ -1091,7 +1084,10 @@
 	            currentAggregationObj,
 	            timePeriod,
 	            timePeriodMultiplier,
-	            aggregationMethod;
+	            aggregationMethod,
+	            i,
+	            len,
+	            arr;
 
 	        self.getValidAggregation();
 	        currentAggregationObj = self.getCurrentAggreation();
@@ -1117,32 +1113,12 @@
 	          resetButton.removeState('disabled');
 	        }
 
-	        var _iteratorNormalCompletion4 = true;
-	        var _didIteratorError4 = false;
-	        var _iteratorError4 = undefined;
-
-	        try {
-	          for (var _iterator4 = validTimePeriod[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-	            timePeriodVal = _step4.value;
-
-	            timePeriodSelectMenuOpt.push({
-	              name: capitalize(timePeriodVal),
-	              value: timePeriodVal
-	            });
-	          }
-	        } catch (err) {
-	          _didIteratorError4 = true;
-	          _iteratorError4 = err;
-	        } finally {
-	          try {
-	            if (!_iteratorNormalCompletion4 && _iterator4.return) {
-	              _iterator4.return();
-	            }
-	          } finally {
-	            if (_didIteratorError4) {
-	              throw _iteratorError4;
-	            }
-	          }
+	        for (i = 0, len = validTimePeriod.length; i < len; i++) {
+	          timePeriodVal = validTimePeriod[i];
+	          timePeriodSelectMenuOpt.push({
+	            name: capitalize(timePeriodVal),
+	            value: timePeriodVal
+	          });
 	        }
 
 	        timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
@@ -1151,32 +1127,13 @@
 	        indexOfTimeUnit = validTimePeriod.indexOf(timePeriod);
 
 	        if (indexOfTimeUnit >= 0) {
-	          var _iteratorNormalCompletion5 = true;
-	          var _didIteratorError5 = false;
-	          var _iteratorError5 = undefined;
-
-	          try {
-	            for (var _iterator5 = validTimePeriodMultiplier[indexOfTimeUnit][Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-	              multiplierVal = _step5.value;
-
-	              timeMulSelectMenuOpt.push({
-	                name: multiplierVal.toString(),
-	                value: multiplierVal.toString()
-	              });
-	            }
-	          } catch (err) {
-	            _didIteratorError5 = true;
-	            _iteratorError5 = err;
-	          } finally {
-	            try {
-	              if (!_iteratorNormalCompletion5 && _iterator5.return) {
-	                _iterator5.return();
-	              }
-	            } finally {
-	              if (_didIteratorError5) {
-	                throw _iteratorError5;
-	              }
-	            }
+	          arr = validTimePeriodMultiplier[indexOfTimeUnit];
+	          for (i = 0, len = arr.length; i < len; i++) {
+	            multiplierVal = arr[i];
+	            timeMulSelectMenuOpt.push({
+	              name: multiplierVal.toString(),
+	              value: multiplierVal.toString()
+	            });
 	          }
 	        }
 

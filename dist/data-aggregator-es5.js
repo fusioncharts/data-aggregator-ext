@@ -244,6 +244,7 @@
 	            avlTimePeriods,
 	            avlTimeMultiplier,
 	            maxNumOfPlot = config.composition.reactiveModel.model['max-plot-point'],
+	            minNumOfPlot = tsObject.globalReactiveModel.model['min-plot-point'],
 	            minimumConsecutiveDifference = config.composition.dataset.category.minimumConsecutiveDifference,
 	            multipliersArr,
 	            currentTimeLength,
@@ -253,7 +254,8 @@
 	            multiplier,
 	            globalReactiveModel = tsObject.globalReactiveModel,
 	            maximumAllowedTicks = globalReactiveModel.prop('x-axis-maximum-allowed-ticks'),
-	            minBinSize;
+	            minBinSize,
+	            maxBinSize;
 
 	        config.currentTimeLength = globalReactiveModel.model['x-axis-visible-range-end'] - globalReactiveModel.model['x-axis-visible-range-start'];
 
@@ -262,6 +264,7 @@
 	        currentTimeLength = config.currentTimeLength;
 
 	        minBinSize = currentTimeLength / maxNumOfPlot;
+	        maxBinSize = currentTimeLength / minNumOfPlot;
 
 	        config.validTimePeriod = [];
 	        config.validTimePeriodMultiplier = [];
@@ -276,9 +279,7 @@
 	            multiplier = avlTimeMultiplier[i][j];
 	            binSize = multiplier * time;
 
-	            if (binSize >= minBinSize && binSize > minimumConsecutiveDifference) {
-	              // Need to revisit
-	              // && (currentTimeLength > maximumAllowedTicks * binSize * 0.5)) {
+	            if (binSize >= minBinSize && binSize > minimumConsecutiveDifference && binSize <= maxBinSize) {
 	              multipliersArr.push(avlTimeMultiplier[i][j]);
 	            }
 	          }
@@ -314,7 +315,7 @@
 	        }
 
 	        return {
-	          timePeriod: suitableInterval && suitableInterval.name,
+	          timePeriod: suitableInterval && suitableInterval.name || config.lowestUnit.timePeriod,
 	          timePeriodMultiplier: suitableInterval && suitableInterval.step,
 	          aggregationMethod: {
 	            value: currentAggMethod && currentAggMethod.nickName,
@@ -476,7 +477,7 @@
 	          if (!aggMethodSelectMenu.value()) {
 	            aggMethodSelectMenu.value(config.defaultAggMethod);
 	          }
-	          if (!timePeriodSelectMenu.value() && !timeMulSelectMenu.value()) {
+	          if (!timePeriodSelectMenu.value() || !timeMulSelectMenu.value()) {
 	            timePeriodSelectMenu.value(config.validTimePeriod[0]);
 	            timePeriodOnChange();
 	          }
@@ -1070,6 +1071,12 @@
 	            applyButton = toolboxCompConfig.applyButton,
 	            resetButton = toolboxCompConfig.resetButton,
 	            model = config.composition.reactiveModel,
+	            maxNumOfPlot = config.composition.reactiveModel.model['max-plot-point'],
+	            minNumOfPlot = self.tsObject.globalReactiveModel.model['min-plot-point'],
+	            currentTimeLength = config.currentTimeLength,
+	            minBinSize = currentTimeLength / maxNumOfPlot,
+	            maxBinSize = currentTimeLength / minNumOfPlot,
+	            currentBinSize = model.prop('bin-size'),
 	            timePeriodVal,
 	            timePeriodSelectMenuOpt,
 	            validTimePeriod,
@@ -1105,7 +1112,13 @@
 
 	        applyButton.setState('disabled');
 
-	        if (aggregation.binSize !== model.prop('bin-size') && (aggregationMethod.value === config.defaultAggMethod || !aggregationMethod.value)) {
+	        if (aggregation.binSize !== null) {
+	          if ((currentBinSize < minBinSize || currentBinSize > maxBinSize) && validTimePeriodMultiplier.length > 0) {
+	            timePeriod = validTimePeriod[0];
+	          }
+	        }
+
+	        if (aggregation.binSize !== currentBinSize && (aggregationMethod.value === config.defaultAggMethod || !aggregationMethod.value)) {
 	          aggregation.binSize = null;
 	          aggregation.aggregationMethod = null;
 	          resetButton.setState('disabled');
@@ -1138,7 +1151,23 @@
 	        }
 
 	        timeMulSelectMenu.updateList(timeMulSelectMenuOpt);
-	        timePeriodMultiplier ? timeMulSelectMenu.value(timePeriodMultiplier.toString()) : timeMulSelectMenu.setPlaceHolderValue('');
+	        timePeriodMultiplier ? timeMulSelectMenu.value(timePeriodMultiplier.toString()) : timeMulSelectMenu.setPlaceHolderValue(config.lowestUnit.multiplier);
+
+	        if (aggregation.binSize !== null) {
+	          if (currentBinSize < minBinSize) {
+	            timeMulSelectMenu.value(validTimePeriodMultiplier[0][0].toString());
+	            timePeriodSelectMenu.value(validTimePeriod[0]);
+	            self.apply(1);
+	          } else if (currentBinSize > maxBinSize) {
+	            if (validTimePeriodMultiplier.length > 0) {
+	              timeMulSelectMenu.value(validTimePeriodMultiplier[0][validTimePeriodMultiplier[0].length - 1].toString());
+	              timePeriodSelectMenu.value(validTimePeriod[0]);
+	              self.apply(1);
+	            } else {
+	              self.apply(0);
+	            }
+	          }
+	        }
 
 	        for (aggVal in avlAggMethods) {
 	          aggMethodSelectMenuOpt.push({
@@ -1147,8 +1176,9 @@
 	          });
 	        }
 
-	        aggMethodSelectMenu.updateList(aggMethodSelectMenuOpt);
-	        aggregationMethod.value ? aggMethodSelectMenu.value(aggregationMethod.value) : aggMethodSelectMenu.setPlaceHolderValue('');
+	        aggMethodSelectMenu.updateList(validTimePeriod.length > 0 ? aggMethodSelectMenuOpt : []);
+	        aggregationMethod.value ? aggMethodSelectMenu.value(aggregationMethod.value) : aggMethodSelectMenu.setPlaceHolderValue('No Formula');
+
 	        config.execute = true;
 	      }
 	    }, {
@@ -1160,8 +1190,13 @@
 	            toolbars = self.toolbars,
 	            ln,
 	            i,
+	            multipliers,
+	            interval,
+	            timePeriodObj,
 	            toolbar,
-	            dataAgg = config.dataAgg;
+	            dataAgg = config.dataAgg,
+	            minimumConsecutiveDifference = config.composition.dataset.category.minimumConsecutiveDifference,
+	            avlTimePeriods = dataAgg.getAggregationTimeRules();
 
 	        self.getAvailablelAggreagation();
 
@@ -1178,6 +1213,25 @@
 
 	          config.defaultAggMethod = dataAgg.getDefaultAggregationMethod().nickName;
 	          !config.drawn && self.apply(1);
+
+	          for (i = 0, ln = avlTimePeriods.length; i < ln; i++) {
+	            if (minimumConsecutiveDifference < avlTimePeriods[i].interval) {
+	              break;
+	            }
+	          }
+
+	          timePeriodObj = avlTimePeriods[i - 1] && avlTimePeriods[i - 1];
+	          multipliers = timePeriodObj && timePeriodObj.multipliers;
+	          interval = timePeriodObj && timePeriodObj.interval;
+	          for (i = 0, ln = multipliers && multipliers.length; i < ln; i++) {
+	            if (minimumConsecutiveDifference < multipliers[i] * interval) {
+	              break;
+	            }
+	          }
+	          config.lowestUnit = {
+	            multiplier: multipliers && multipliers[i - 1].toString(),
+	            timePeriod: timePeriodObj && timePeriodObj.name
+	          };
 	          self.rangeOnChange();
 	          config.drawn = true;
 	        }

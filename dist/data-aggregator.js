@@ -613,11 +613,12 @@
 	            style: {
 	              background: '#fff',
 	              'border-color': '#898b8b',
-	              'border-radius': '1px',
+	              'border-radius': '2px',
 	              'border-style': 'solid',
-	              'border-width': '2px',
+	              'border-width': '1px',
 	              'font-size': '11px',
-	              'font-family': '"Lucida Grande", sans-serif'
+	              'font-family': '"Lucida Grande", sans-serif',
+	              'box-shadow': 'rgb(153, 153, 153) 0px 0px 5px'
 	            }
 	          },
 	          listItem: {

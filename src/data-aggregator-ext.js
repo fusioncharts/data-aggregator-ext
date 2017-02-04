@@ -447,6 +447,7 @@ module.exports = function (dep) {
 
       var defaultStyle = {
         label: {
+          className: 'data-aggregator-' + paper.getId(),
           container: {
             height: 22,
             style: {
@@ -460,8 +461,8 @@ module.exports = function (dep) {
             style: {
               'font-size': '13px',
               'font-family': '"Lucida Grande", sans-serif',
-              'font-weight': 'bold',
-              'fill': '#4b4b4b'
+              'fill': '#696969',
+              'font-weight': 'bold'
             }
           }
         },
@@ -539,11 +540,12 @@ module.exports = function (dep) {
             style: {
               background: '#fff',
               'border-color': '#898b8b',
-              'border-radius': '1px',
+              'border-radius': '2px',
               'border-style': 'solid',
-              'border-width': '2px',
+              'border-width': '1px',
               'font-size': '11px',
-              'font-family': '"Lucida Grande", sans-serif'
+              'font-family': '"Lucida Grande", sans-serif',
+              'box-shadow': 'rgb(153, 153, 153) 0px 0px 5px'
             }
           },
           listItem: {
@@ -676,7 +678,7 @@ module.exports = function (dep) {
         style = usrConfig.styles;
       }
 
-      label = new toolbox.Label('Aggregation: ', dependencies, style.label);
+      label = new toolbox.Label('Aggregate Data:', dependencies, style.label);
 
       label.setConfig({
         className: style.label.className

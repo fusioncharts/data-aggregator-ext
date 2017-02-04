@@ -520,6 +520,7 @@
 
 	      var defaultStyle = {
 	        label: {
+	          className: 'data-aggregator-' + paper.getId(),
 	          container: {
 	            height: 22,
 	            style: {
@@ -533,8 +534,8 @@
 	            style: {
 	              'font-size': '13px',
 	              'font-family': '"Lucida Grande", sans-serif',
-	              'font-weight': 'bold',
-	              'fill': '#4b4b4b'
+	              'fill': '#696969',
+	              'font-weight': 'bold'
 	            }
 	          }
 	        },
@@ -749,7 +750,7 @@
 	        style = usrConfig.styles;
 	      }
 
-	      label = new toolbox.Label('Aggregation: ', dependencies, style.label);
+	      label = new toolbox.Label('Aggregate Data:', dependencies, style.label);
 
 	      label.setConfig({
 	        className: style.label.className

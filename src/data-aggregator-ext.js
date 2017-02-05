@@ -153,7 +153,6 @@ module.exports = function (dep) {
         binSize,
         multiplier,
         globalReactiveModel = tsObject.globalReactiveModel,
-        maximumAllowedTicks = globalReactiveModel.prop('x-axis-maximum-allowed-ticks'),
         minBinSize,
         maxBinSize;
 
@@ -1061,7 +1060,11 @@ module.exports = function (dep) {
       }
 
       timePeriodSelectMenu.updateList(timePeriodSelectMenuOpt);
-      timePeriod ? timePeriodSelectMenu.value(timePeriod) : timePeriodSelectMenu.setPlaceHolderValue('');
+      if (timePeriod && currentBinSize) {
+        timePeriodSelectMenu.value(timePeriod);
+      } else {
+        timePeriodSelectMenu.setPlaceHolderValue(capitalize(config.lowestUnit.timePeriod));
+      }
 
       indexOfTimeUnit = validTimePeriod.indexOf(timePeriod);
 

@@ -1223,10 +1223,10 @@
 	          // Need to revisit logic
 	          for (i = 0, ln = avlTimePeriods.length; i < ln; i++) {
 	            tempMultiplier = minimumConsecutiveDifference / avlTimePeriods[i].interval;
-	            if (tempMultiplier >= avlTimePeriods[i].multipliers[0] && tempMultiplier <= avlTimePeriods[i].multipliers[avlTimePeriods[i].multipliers.length - 1]) {
-	              for (j = 0; j < avlTimePeriods[i].multipliers.length; j++) {
-	                if (tempMultiplier === avlTimePeriods[i].multipliers[j] || tempMultiplier < avlTimePeriods[i].multipliers[j]) {
-	                  multipliers = avlTimePeriods[i].multipliers[j];
+	            if (tempMultiplier >= avlTimePeriods[i].possibleFactors[0] && tempMultiplier <= avlTimePeriods[i].possibleFactors[avlTimePeriods[i].possibleFactors.length - 1]) {
+	              for (j = 0; j < avlTimePeriods[i].possibleFactors.length; j++) {
+	                if (tempMultiplier === avlTimePeriods[i].possibleFactors[j] || tempMultiplier < avlTimePeriods[i].possibleFactors[j]) {
+	                  multipliers = avlTimePeriods[i].possibleFactors[j];
 	                  timePeriodObj = avlTimePeriods[i];
 	                  break;
 	                }

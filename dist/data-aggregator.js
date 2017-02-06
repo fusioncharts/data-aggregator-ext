@@ -1194,10 +1194,11 @@
 	        toolbars = self.toolbars,
 	        ln,
 	        i,
+	        j,
 	        multipliers,
-	        interval,
 	        timePeriodObj,
 	        toolbar,
+	        tempMultiplier,
 	        dataAgg = config.dataAgg,
 	        minimumConsecutiveDifference = config.composition.dataset.category.minimumConsecutiveDifference,
 	        avlTimePeriods = dataAgg.getAggregationTimeRules();
@@ -1217,23 +1218,29 @@
 
 	        config.defaultAggMethod = dataAgg.getDefaultAggregationMethod().nickName;
 	        !config.drawn && self.apply(1);
-
+	        // Consider the next interval if the minConscecutiveDiff does not match with the available time periods in rule
+	        // Need to revisit logic
 	        for (i = 0, ln = avlTimePeriods.length; i < ln; i++) {
-	          if (minimumConsecutiveDifference < avlTimePeriods[i].interval) {
+	          tempMultiplier = minimumConsecutiveDifference / avlTimePeriods[i].interval;
+	          if (tempMultiplier >= avlTimePeriods[i].multipliers[0] &&
+	            tempMultiplier <= avlTimePeriods[i].multipliers[avlTimePeriods[i].multipliers.length - 1]) {
+	            for (j = 0; j < avlTimePeriods[i].multipliers.length; j++) {
+	              if (tempMultiplier === avlTimePeriods[i].multipliers[j] ||
+	                tempMultiplier < avlTimePeriods[i].multipliers[j]) {
+	                multipliers = avlTimePeriods[i].multipliers[j];
+	                timePeriodObj = avlTimePeriods[i];
+	                break;
+	              }
+	            }
 	            break;
-	          }
-	        }
-
-	        timePeriodObj = avlTimePeriods[i - 1] && avlTimePeriods[i - 1];
-	        multipliers = timePeriodObj && timePeriodObj.multipliers;
-	        interval = timePeriodObj && timePeriodObj.interval;
-	        for (i = 0, ln = multipliers && multipliers.length; i < ln; i++) {
-	          if (minimumConsecutiveDifference < (multipliers[i] * interval)) {
+	          } else if (tempMultiplier < 1) {
+	            multipliers = 1;
+	            timePeriodObj = avlTimePeriods[i];
 	            break;
 	          }
 	        }
 	        config.lowestUnit = {
-	          multiplier: multipliers && multipliers[i - 1].toString(),
+	          multiplier: multipliers && multipliers.toString(),
 	          timePeriod: timePeriodObj && timePeriodObj.name
 	        };
 	        self.rangeOnChange();

@@ -544,7 +544,8 @@ module.exports = function (dep) {
               'border-width': '1px',
               'font-size': '11px',
               'font-family': '"Lucida Grande", sans-serif',
-              'box-shadow': 'rgb(153, 153, 153) 0px 0px 5px'
+              'box-shadow': 'rgb(153, 153, 153) 0px 0px 5px',
+              color: '#696969'
             }
           },
           listItem: {

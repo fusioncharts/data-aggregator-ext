@@ -521,6 +521,7 @@
 	      var defaultStyle = {
 	        label: {
 	          className: 'data-aggregator-' + paper.getId(),
+	          height: 22,
 	          container: {
 	            height: 22,
 	            style: {

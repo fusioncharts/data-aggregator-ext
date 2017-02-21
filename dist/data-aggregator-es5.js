@@ -351,7 +351,7 @@
 
 	        api = tsObject.chartInstance.apiInstance;
 	        store = api.getComponentStore();
-	        config.composition = composition = store.getCanvasByIndex(0).composition;
+	        config.composition = composition = store.getCanvasByIndex(1).composition;
 	        config.dataAgg = composition.impl.getDataAggregator();
 
 	        toolboxComponent.toolbox = dep.FC.getComponent('api', 'toolbox');
@@ -895,14 +895,14 @@
 	        var _self = this,
 	            tsObject = _self.tsObject,
 	            usrConfig = _self.config.usrConfig;
-
 	        _self.padding = 5;
 	        tsObject.spaceManagerInstance.add([{
 	          name: function name() {
 	            return 'data-aggregator';
 	          },
 	          ref: function ref(obj) {
-	            return obj['0'];
+	            var userRef = usrConfig.ref;
+	            return userRef === undefined ? obj.chart : userRef;
 	          },
 	          self: function self() {
 	            return _self;
@@ -932,7 +932,7 @@
 	              }]
 	            }]
 	          }]
-	        }]);
+	        }], Object.keys(tsObject.chartInstance.apiInstance.getComponentStore().getAllCanvas()).length);
 	      }
 	    }, {
 	      key: 'setDrawingConfiguration',
